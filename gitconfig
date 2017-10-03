@@ -1,0 +1,20 @@
+[user]
+	name = Nicolas Gonzalez Rodriguez
+	email = n@rrz.cc
+[core]
+	editor = vim
+[color]
+	ui = auto
+[alias]
+	ci = commit
+	co = checkout
+	st = status -s
+  br = branch
+  df = diff --color
+  lol = log --graph --decorate --pretty=oneline --abbrev-commit
+  lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	unstage = reset HEAD --
+	last = log -1 HEAD
+  ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue \\ [%cn]" --decorate
+  ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue \\ [%cn]" --decorate --numstat
+  lt = ls-tree -r master --name-only
