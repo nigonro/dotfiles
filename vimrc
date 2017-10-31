@@ -1,8 +1,7 @@
 call plug#begin('~/.vim/plugged')
 
-Plug 'fatih/vim-go'
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ConradIrwin/vim-bracketed-paste'
-Plug 'Raimondi/delimitMate'
 Plug 'tomasr/molokai'
 Plug 'scrooloose/nerdtree'
 Plug 'scrooloose/nerdcommenter'
@@ -14,10 +13,9 @@ Plug 'majutsushi/tagbar'
 Plug 'pangloss/vim-javascript'
 Plug 'stephpy/vim-yaml'
 Plug 'Yggdroot/indentLine'
+Plug 'blueyed/vim-diminactive'
 Plug 'godlygeek/tabular'
 Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
-Plug 'Shougo/neocomplete.vim'
-Plug 'blueyed/vim-diminactive'
 Plug 'leafgarland/typescript-vim'
 Plug 'tpope/vim-surround'
 Plug 'luan/vim-concourse'
@@ -25,6 +23,14 @@ Plug 'kylef/apiblueprint.vim'
 Plug 'cespare/vim-toml'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'wellle/targets.vim'
+Plug 'jiangmiao/auto-pairs'
+Plug 'roxma/nvim-yarp'
+Plug 'roxma/vim-hug-neovim-rpc'
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
+Plug 'zchee/deoplete-go', { 'do': 'make'}
+Plug 'itchyny/lightline.vim'
+Plug 'w0rp/ale'
 
 call plug#end()
 
@@ -125,7 +131,7 @@ set shiftround
 " -----------------
 augroup vimrc
   au BufReadPre * setlocal foldmethod=indent
-  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
+  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=syntax | endif
 augroup END
 set foldenable
 set foldlevelstart=10
@@ -172,13 +178,12 @@ set t_Co=256
 "set background=dark
 "let g:molokai_original = 1
 colorscheme molokai
-highlight ColorColumn ctermbg=52
+highlight ColorColumn ctermbg=236
 
 " -----------------
 " filetypes
 " -----------------
 autocmd BufNewFile,BufRead *.go setlocal noet ts=4 sw=4 sts=4
-
 autocmd BufNewFile,BufRead *.ino setlocal noet ts=4 sw=4 sts=4
 autocmd BufNewFile,BufRead *.txt setlocal noet ts=4 sw=4
 autocmd BufNewFile,BufRead *.md setlocal noet ts=4 sw=4
@@ -195,95 +200,96 @@ nnoremap <leader>m :bd<CR>
 " -----------------
 " status line
 " -----------------
-let s:modes = {
-      \ 'n': '  NORMAL ',
-      \ 'i': '  INSERT ',
-      \ 'R': '  REPLACE ',
-      \ 'v': '  VISUAL ',
-      \ 'V': '  V-LINE ',
-      \ "\<C-v>": '  V-BLOCK ',
-      \ 'c': 'COMMAND',
-      \ 's': 'SELECT',
-      \ 'S': 'S-LINE',
-      \ "\<C-s>": 'S-BLOCK',
-      \ 't': 'TERMINAL'
-      \}
+"let s:modes = {
+      "\ 'n': '  NORMAL ',
+      "\ 'i': '  INSERT ',
+      "\ 'R': '  REPLACE ',
+      "\ 'v': '  VISUAL ',
+      "\ 'V': '  V-LINE ',
+      "\ "\<C-v>": '  V-BLOCK ',
+      "\ 'c': 'COMMAND',
+      "\ 's': 'SELECT',
+      "\ 'S': 'S-LINE',
+      "\ "\<C-s>": 'S-BLOCK',
+      "\ 't': 'TERMINAL'
+      "\}
 
-let s:prev_mode = ""
-function! StatusLineMode()
-  let cur_mode = get(s:modes, mode(), '')
+"let s:prev_mode = ""
+"function! StatusLineMode()
+  "let cur_mode = get(s:modes, mode(), '')
 
   "do not update higlight if the mode is the same
-  if cur_mode == s:prev_mode
-    return cur_mode
-  endif
+  "if cur_mode == s:prev_mode
+    "return cur_mode
+  "endif
 
-  if cur_mode == "  NORMAL "
-    exe 'hi! StatusLine ctermfg=236'
-    exe 'hi! myModeColor cterm=bold ctermbg=148 ctermfg=22'
-  elseif cur_mode == "  INSERT "
-    exe 'hi! myModeColor cterm=bold ctermbg=160 ctermfg=231'
-  elseif cur_mode == "  VISUAL " || cur_mode == "  V-LINE " || cur_mode == "  V-BLOCK "
-    exe 'hi! StatusLine ctermfg=236'
-    exe 'hi! myModeColor cterm=bold ctermbg=208 ctermfg=88'
-  endif
+  "if cur_mode == "  NORMAL "
+    "exe 'hi! StatusLine ctermfg=236'
+    "exe 'hi! myModeColor cterm=bold ctermbg=148 ctermfg=22'
+  "elseif cur_mode == "  INSERT "
+    "exe 'hi! myModeColor cterm=bold ctermbg=160 ctermfg=231'
+  "elseif cur_mode == "  VISUAL " || cur_mode == "  V-LINE " || cur_mode == "  V-BLOCK "
+    "exe 'hi! StatusLine ctermfg=236'
+    "exe 'hi! myModeColor cterm=bold ctermbg=208 ctermfg=88'
+  "endif
 
-  let s:prev_mode = cur_mode
-  return cur_mode
-endfunction
+  "let s:prev_mode = cur_mode
+  "return cur_mode
+"endfunction
 
-function! StatusLineFiletype()
-  return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
-endfunction
+"function! StatusLineFiletype()
+  "return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
+"endfunction
 
-function! StatusLinePercent()
-  return (100 * line('.') / line('$')) . '%'
-endfunction
+"function! StatusLinePercent()
+  "return (100 * line('.') / line('$')) . '%'
+"endfunction
 
-function! StatusLineLeftInfo()
- let filename = '' != expand('%:t') ? expand('%:t') : '[No Name]'
- return filename
-endfunction
+"function! StatusLineLeftInfo()
+ "let filename = '' != expand('%:t') ? expand('%:t') : '[No Name]'
+ "return filename
+"endfunction
 
-exe 'hi! myInfoColor ctermbg=240 ctermfg=252'
+"exe 'hi! myInfoColor ctermbg=240 ctermfg=252'
 
 " start building our statusline
-set statusline=
+"set statusline=
 
 " mode with custom colors
-set statusline+=%#myModeColor#
-set statusline+=%{StatusLineMode()}
-set statusline+=%*
+"set statusline+=%#myModeColor#
+"set statusline+=%{StatusLineMode()}
+"set statusline+=%*
 
 " left information bar (after mode)
-set statusline+=%#myInfoColor#
-set statusline+=\ %{StatusLineLeftInfo()}
-set statusline+=\ %*
+"set statusline+=%#myInfoColor#
+"set statusline+=\ %{StatusLineLeftInfo()}
+"set statusline+=\ %*
 
 " go command status (requires vim-go)
-set statusline+=%#goStatuslineColor#
-set statusline+=%{go#statusline#Show()}
-set statusline+=%*
+"set statusline+=%#goStatuslineColor#
+"set statusline+=%{go#statusline#Show()}
+"set statusline+=%*
 
 " right section seperator
-set statusline+=%=
+"set statusline+=%=
 
 " filetype, percentage, line number and column number
-set statusline+=%#myInfoColor#
-set statusline+=\ %{StatusLineFiletype()}\ %{StatusLinePercent()}\ %l:%v
-set statusline+=\ %*
+"set statusline+=%#myInfoColor#
+"set statusline+=\ %{StatusLineFiletype()}\ %{StatusLinePercent()}\ %l:%v
+"set statusline+=\ %*
 
 " -----------------
 "  mappings
 " -----------------
+nnoremap <CR> :wa<CR>
 imap kj <Esc>
 
 let mapleader = ","
 let g:mapleader = ","
 
 " Some useful quickfix shortcuts for quickfix
-map <C-n> :cn<CR>
-map <C-m> :cp<CR>
+"map <C-n> :cn<CR>
+"map <C-m> :cp<CR>
 nnoremap <leader>a :cclose<CR>
 
 " put quickfix window always to the bottom
@@ -344,6 +350,13 @@ vnoremap L g_
 " -----------------
 "  plugins
 " -----------------
+
+"  hardmode
+nnoremap <leader>h <Esc>:call ToggleHardMode()<CR>
+autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
+
+"  diminactive
+let g:diminactive_use_colorcolumn = 1
 
 "  vim-go
 " -----------------
@@ -423,16 +436,6 @@ noremap <Leader>f :NERDTreeFind<cr>
 
 let NERDTreeShowHidden=1
 
-" deliMate
-" -----------------
-let g:delimitMate_expand_cr = 1
-let g:delimitMate_expand_space = 1
-let g:delimitMate_smart_quotes = 1
-let g:delimitMate_expand_inside_quotes = 0
-let g:delimitMate_smart_matchpairs = '^\%(\w\|\$\)'
-
-imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
-
 " better whitespaces
 " -----------------
 autocmd BufEnter * EnableStripWhitespaceOnSave
@@ -453,64 +456,31 @@ nmap <F8> :TagbarToggle<CR>
 " -----------------
 let g:vim_json_syntax_conceal = 0
 
-
-" diminactive
+" deoplete
 " -----------------
-let g:diminactive_use_colorcolumn = 0
-let g:diminactive_use_syntax = 1
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#ignore_sources = {}
+let g:deoplete#ignore_sources._ = ['buffer', 'member', 'tag', 'file', 'neosnippet']
+let g:deoplete#sources#go#sort_class = ['func', 'type', 'var', 'const']
+let g:deoplete#sources#go#align_class = 1
 
-" neocomplete
-" -----------------
-" Disable AutoComplPop.
-let g:acp_enableAtStartup = 0
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
+" Use partial fuzzy matches like YouCompleteMe
+call deoplete#custom#set('_', 'matchers', ['matcher_fuzzy'])
+call deoplete#custom#set('_', 'converters', ['converter_remove_paren'])
+call deoplete#custom#set('_', 'disabled_syntaxes', ['Comment', 'String'])
 
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions'
-        \ }
-
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-    let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-" Plugin key-mappings.
-inoremap <expr><C-g>     neocomplete#undo_completion()
-inoremap <expr><C-l>     neocomplete#complete_common_string()
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-  " For no inserting <CR> key.
-  "return pumvisible() ? "\<C-y>" : "\<CR>"
-endfunction
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+
 " <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-" Close popup by <Space>.
-"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS>  deoplete#smart_close_popup()."\<C-h>"
 
-" AutoComplPop like behavior.
-"let g:neocomplete#enable_auto_select = 1
-
-" Shell like behavior(not recommended).
-"set completeopt+=longest
-"let g:neocomplete#enable_auto_select = 1
-"let g:neocomplete#disable_auto_complete = 1
-"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function() abort
+    return deoplete#close_popup() . "\<CR>"
+endfunction
 
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -519,10 +489,60 @@ autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-  let g:neocomplete#sources#omni#input_patterns = {}
-endif
-"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+" Lightline
+" -----------------
+let g:lightline = {
+\ 'colorscheme': 'wombat',
+\ 'active': {
+\   'left': [['mode', 'paste'], ['filename', 'modified']],
+\   'right': [['lineinfo'], ['percent'], ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok']]
+\ },
+\ 'component_expand': {
+\   'linter_warnings': 'LightlineLinterWarnings',
+\   'linter_errors': 'LightlineLinterErrors',
+\   'linter_ok': 'LightlineLinterOK'
+\ },
+\ 'component_type': {
+\   'readonly': 'error',
+\   'linter_warnings': 'warning',
+\   'linter_errors': 'error'
+\ },
+\ }
+
+function! LightlineLinterWarnings() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf('%d ◆', all_non_errors)
+endfunction
+
+function! LightlineLinterErrors() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '' : printf('%d ✗', all_errors)
+endfunction
+
+function! LightlineLinterOK() abort
+  let l:counts = ale#statusline#Count(bufnr(''))
+  let l:all_errors = l:counts.error + l:counts.style_error
+  let l:all_non_errors = l:counts.total - l:all_errors
+  return l:counts.total == 0 ? '✓ ' : ''
+endfunction
+
+autocmd User ALELint call s:MaybeUpdateLightline()
+
+" Update and show lightline but only if it's visible (e.g., not in Goyo)
+function! s:MaybeUpdateLightline()
+  if exists('#lightline')
+    call lightline#update()
+  end
+endfunction
+
+" ALE
+" -----------------
+let g:ale_sign_warning = '▲'
+let g:ale_sign_error = '✗'
+highlight link ALEWarningSign String
+highlight link ALEErrorSign Title
+let g:ale_lint_on_text_changed = "normal"
