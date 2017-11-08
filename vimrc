@@ -31,6 +31,9 @@ Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' 
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'itchyny/lightline.vim'
 Plug 'w0rp/ale'
+Plug 'SirVer/ultisnips'
+Plug 'wikitopian/hardmode'
+Plug 'matze/vim-move'
 
 call plug#end()
 
@@ -198,91 +201,12 @@ nnoremap <leader>o :only<CR>
 nnoremap <leader>m :bd<CR>
 
 " -----------------
-" status line
-" -----------------
-"let s:modes = {
-      "\ 'n': '  NORMAL ',
-      "\ 'i': '  INSERT ',
-      "\ 'R': '  REPLACE ',
-      "\ 'v': '  VISUAL ',
-      "\ 'V': '  V-LINE ',
-      "\ "\<C-v>": '  V-BLOCK ',
-      "\ 'c': 'COMMAND',
-      "\ 's': 'SELECT',
-      "\ 'S': 'S-LINE',
-      "\ "\<C-s>": 'S-BLOCK',
-      "\ 't': 'TERMINAL'
-      "\}
-
-"let s:prev_mode = ""
-"function! StatusLineMode()
-  "let cur_mode = get(s:modes, mode(), '')
-
-  "do not update higlight if the mode is the same
-  "if cur_mode == s:prev_mode
-    "return cur_mode
-  "endif
-
-  "if cur_mode == "  NORMAL "
-    "exe 'hi! StatusLine ctermfg=236'
-    "exe 'hi! myModeColor cterm=bold ctermbg=148 ctermfg=22'
-  "elseif cur_mode == "  INSERT "
-    "exe 'hi! myModeColor cterm=bold ctermbg=160 ctermfg=231'
-  "elseif cur_mode == "  VISUAL " || cur_mode == "  V-LINE " || cur_mode == "  V-BLOCK "
-    "exe 'hi! StatusLine ctermfg=236'
-    "exe 'hi! myModeColor cterm=bold ctermbg=208 ctermfg=88'
-  "endif
-
-  "let s:prev_mode = cur_mode
-  "return cur_mode
-"endfunction
-
-"function! StatusLineFiletype()
-  "return winwidth(0) > 70 ? (strlen(&filetype) ? &filetype : 'no ft') : ''
-"endfunction
-
-"function! StatusLinePercent()
-  "return (100 * line('.') / line('$')) . '%'
-"endfunction
-
-"function! StatusLineLeftInfo()
- "let filename = '' != expand('%:t') ? expand('%:t') : '[No Name]'
- "return filename
-"endfunction
-
-"exe 'hi! myInfoColor ctermbg=240 ctermfg=252'
-
-" start building our statusline
-"set statusline=
-
-" mode with custom colors
-"set statusline+=%#myModeColor#
-"set statusline+=%{StatusLineMode()}
-"set statusline+=%*
-
-" left information bar (after mode)
-"set statusline+=%#myInfoColor#
-"set statusline+=\ %{StatusLineLeftInfo()}
-"set statusline+=\ %*
-
-" go command status (requires vim-go)
-"set statusline+=%#goStatuslineColor#
-"set statusline+=%{go#statusline#Show()}
-"set statusline+=%*
-
-" right section seperator
-"set statusline+=%=
-
-" filetype, percentage, line number and column number
-"set statusline+=%#myInfoColor#
-"set statusline+=\ %{StatusLineFiletype()}\ %{StatusLinePercent()}\ %l:%v
-"set statusline+=\ %*
-
-" -----------------
 "  mappings
 " -----------------
 nnoremap <CR> :wa<CR>
 imap kj <Esc>
+nmap <space> <C-d>
+nmap <S-space> <C-u>
 
 let mapleader = ","
 let g:mapleader = ","
@@ -304,7 +228,7 @@ nnoremap <leader>w :w!<cr>
 nnoremap <silent> <leader>q :q!<CR>
 
 " Center the screen
-nnoremap <space> zz
+"nnoremap <space> zz
 
 " Remove search highlight
 nnoremap <leader><space> :nohlsearch<CR>
@@ -353,7 +277,6 @@ vnoremap L g_
 
 "  hardmode
 nnoremap <leader>h <Esc>:call ToggleHardMode()<CR>
-autocmd VimEnter,BufNewFile,BufReadPost * silent! call HardMode()
 
 "  diminactive
 let g:diminactive_use_colorcolumn = 1
@@ -546,3 +469,41 @@ let g:ale_sign_error = '✗'
 highlight link ALEWarningSign String
 highlight link ALEErrorSign Title
 let g:ale_lint_on_text_changed = "normal"
+
+" ultisnips
+" -----------------
+function! g:UltiSnips_Complete()
+  call UltiSnips#ExpandSnippet()
+  if g:ulti_expand_res == 0
+    if pumvisible()
+      return "\<C-n>"
+    else
+      call UltiSnips#JumpForwards()
+      if g:ulti_jump_forwards_res == 0
+        return "\<TAB>"
+      endif
+    endif
+  endif
+  return ""
+endfunction
+
+function! g:UltiSnips_Reverse()
+  call UltiSnips#JumpBackwards()
+  if g:ulti_jump_backwards_res == 0
+    return "\<C-P>"
+  endif
+
+  return ""
+endfunction
+
+
+if !exists("g:UltiSnipsJumpForwardTrigger")
+  let g:UltiSnipsJumpForwardTrigger = "<tab>"
+endif
+
+if !exists("g:UltiSnipsJumpBackwardTrigger")
+  let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+endif
+
+au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
