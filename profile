@@ -58,7 +58,11 @@ export PATH=$PATH:$GOPATH/bin
 export CDPATH=.:$GOPATH/src/github.com/vwdilab:$GOPATH/src/github.com/$USER
 
 got() {
-    GOT_OUTPUT=`go test -v $(go list ./... | grep -v /vendor/)`
+    if [ -d "vendor" ]; then
+        GOT_OUTPUT=`go test -v $(go list ./... | grep -v /vendor/)`
+    else
+        GOT_OUTPUT=`go test -v ./...`
+    fi
     GOT_OUTPUT=`echo "$GOT_OUTPUT" | sed /RUN/d`
     GOT_OUTPUT=`echo "$GOT_OUTPUT" | sed s/PASS/$(printf "\033[32mPASS\033[0m")/g`
     GOT_OUTPUT=`echo "$GOT_OUTPUT" | sed s/FAIL/$(printf "\033[31mFAIL\033[0m")/g`
