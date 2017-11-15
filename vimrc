@@ -8,7 +8,6 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'elzr/vim-json', {'for' : 'json'}
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'mattn/emmet-vim'
-Plug 'roblillack/vim-bufferlist'
 Plug 'majutsushi/tagbar'
 Plug 'pangloss/vim-javascript'
 Plug 'stephpy/vim-yaml'
@@ -34,6 +33,10 @@ Plug 'w0rp/ale'
 Plug 'SirVer/ultisnips'
 Plug 'wikitopian/hardmode'
 Plug 'matze/vim-move'
+Plug 'albertorestifo/vim-playground-colors'
+Plug 'altercation/vim-colors-solarized'
+Plug 'easymotion/vim-easymotion'
+Plug 'jlanzarotta/bufexplorer'
 
 call plug#end()
 
@@ -180,8 +183,9 @@ set t_Co=256
 "let g:rehash256 = 1
 "set background=dark
 "let g:molokai_original = 1
-colorscheme molokai
-highlight ColorColumn ctermbg=236
+"colorscheme molokai
+colorscheme solarized
+"highlight ColorColumn ctermbg=236
 
 " -----------------
 " filetypes
@@ -363,14 +367,6 @@ let NERDTreeShowHidden=1
 " -----------------
 autocmd BufEnter * EnableStripWhitespaceOnSave
 
-" bufferlist
-" -----------------
-map <Leader>q :call BufferList()<CR>
-let g:BufferListWidth = 25
-let g:BufferListMaxWidth = 50
-hi BufferSelected ctermfg=green ctermbg=black cterm=reverse
-hi BufferNormal ctermfg=black ctermbg=white cterm=reverse
-
 " Tagbar
 " -----------------
 nmap <F8> :TagbarToggle<CR>
@@ -415,7 +411,7 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 " Lightline
 " -----------------
 let g:lightline = {
-\ 'colorscheme': 'wombat',
+\ 'colorscheme': 'solarized',
 \ 'active': {
 \   'left': [['mode', 'paste'], ['filename', 'modified']],
 \   'right': [['lineinfo'], ['percent'], ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok']]
