@@ -37,6 +37,7 @@ Plug 'albertorestifo/vim-playground-colors'
 Plug 'altercation/vim-colors-solarized'
 Plug 'easymotion/vim-easymotion'
 Plug 'jlanzarotta/bufexplorer'
+Plug 'christoomey/vim-tmux-navigator'
 
 call plug#end()
 
