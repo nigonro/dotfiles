@@ -39,6 +39,7 @@ Plug 'easymotion/vim-easymotion'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
+Plug 'posva/vim-vue'
 
 call plug#end()
 
@@ -124,11 +125,11 @@ autocmd InsertLeave * set nocul
 " -----------------
 " tabs
 " -----------------
-set tabstop=2
-set expandtab
+set tabstop=4
+"set expandtab
 set softtabstop=4
 set shiftwidth=4
-retab
+"retab
 set autoindent
 set backspace=indent,eol,start
 noremap <Tab> ^==<Esc>
@@ -393,16 +394,44 @@ call deoplete#custom#set('_', 'converters', ['converter_remove_paren'])
 call deoplete#custom#set('_', 'disabled_syntaxes', ['Comment', 'String'])
 
 " <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+"inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS>  deoplete#smart_close_popup()."\<C-h>"
+"inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
+"inoremap <expr><BS>  deoplete#smart_close_popup()."\<C-h>"
 
 " <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function() abort
-    return deoplete#close_popup() . "\<CR>"
+"inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+"function! s:my_cr_function() abort
+    "return deoplete#close_popup() . "\<CR>"
+"endfunction
+
+" <CR>: If popup menu visible, expand snippet or close popup with selection,
+"       Otherwise, check if within empty pair and use delimitMate.
+"inoremap <silent><expr><CR> pumvisible() ?
+	"\ (neosnippet#expandable() ? neosnippet#mappings#expand_impl() : deoplete#close_popup())
+		"\ : (delimitMate#WithinEmptyPair() ? "\<C-R>=delimitMate#ExpandReturn()\<CR>" : "\<CR>")
+
+" <Tab> completion:
+" 1. If popup menu is visible, select and insert next item
+" 2. Otherwise, if within a snippet, jump to next input
+" 3. Otherwise, if preceding chars are whitespace, insert tab char
+" 4. Otherwise, start manual autocomplete
+imap <silent><expr><Tab> pumvisible() ? "\<Down>"
+	\ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
+	\ : (<SID>is_whitespace() ? "\<Tab>"
+	\ : deoplete#manual_complete()))
+
+smap <silent><expr><Tab> pumvisible() ? "\<Down>"
+	\ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
+	\ : (<SID>is_whitespace() ? "\<Tab>"
+	\ : deoplete#manual_complete()))
+
+inoremap <expr><S-Tab>  pumvisible() ? "\<Up>" : "\<C-h>"
+
+function! s:is_whitespace() "{{{
+	let col = col('.') - 1
+	return ! col || getline('.')[col - 1] =~? '\s'
 endfunction
 
 " Enable omni completion.
