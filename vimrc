@@ -10,6 +10,7 @@ Plug 'ntpeters/vim-better-whitespace'
 Plug 'mattn/emmet-vim'
 Plug 'majutsushi/tagbar'
 Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
 Plug 'stephpy/vim-yaml'
 Plug 'Yggdroot/indentLine'
 Plug 'blueyed/vim-diminactive'
@@ -40,6 +41,7 @@ Plug 'jlanzarotta/bufexplorer'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
 Plug 'posva/vim-vue'
+Plug 'flowtype/vim-flow'
 
 call plug#end()
 
@@ -119,8 +121,18 @@ endif
 " change cursor between NORMAL and INSERT
 let &t_SI = "\<Esc>]50;CursorShape=1\x7"
 let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-autocmd InsertEnter * set cul
-autocmd InsertLeave * set nocul
+if has("autocmd")
+  au VimEnter,InsertLeave * silent execute '!echo -ne "\e[2 q"' | redraw!
+  au InsertEnter,InsertChange *
+    \ if v:insertmode == 'i' |
+    \   silent execute '!echo -ne "\e[1 q"' | redraw! |
+    \ elseif v:insertmode == 'r' |
+    \   silent execute '!echo -ne "\e[3 q"' | redraw! |
+    \ endif
+  au VimLeave * silent execute '!echo -ne "\e[ q"' | redraw!
+endif
+"autocmd InsertEnter * set cul
+"autocmd InsertLeave * set cul
 
 " -----------------
 " tabs
@@ -193,6 +205,7 @@ colorscheme solarized
 " -----------------
 " filetypes
 " -----------------
+autocmd BufNewFile,BufRead *.js,*.jsx setlocal et ts=2 sts=2 sw=2
 autocmd BufNewFile,BufRead *.go setlocal noet ts=4 sw=4 sts=4
 autocmd BufNewFile,BufRead *.ino setlocal noet ts=4 sw=4 sts=4
 autocmd BufNewFile,BufRead *.txt setlocal noet ts=4 sw=4
@@ -210,7 +223,7 @@ nnoremap <leader>m :bd<CR>
 " -----------------
 "  mappings
 " -----------------
-nnoremap <CR> :wa<CR>
+nnoremap <CR> :w<CR>
 imap kj <Esc>
 nmap <space> <C-d>
 nmap <S-space> <C-u>
@@ -251,6 +264,10 @@ map <C-j> <C-W>j
 map <C-k> <C-W>k
 map <C-h> <C-W>h
 map <C-l> <C-W>l
+
+" Faster split
+noremap vv <C-W>v
+noremap vs <C-W>s
 
 " Visual linewise up and down by default (and use gj gk to go quicker)
 noremap <Up> gk
@@ -497,7 +514,8 @@ let g:ale_sign_warning = '▲'
 let g:ale_sign_error = '✗'
 highlight link ALEWarningSign String
 highlight link ALEErrorSign Title
-let g:ale_lint_on_text_changed = "normal"
+let g:ale_lint_on_text_changed = "never"
+let g:ale_lint_on_enter = 0
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
@@ -544,3 +562,7 @@ au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsJumpBackwardTrigger . " 
 " rust
 " -----------------
 let g:rustfmt_autosave = 1
+
+" jsx
+" -----------------
+let g:jsx_ext_required = 0
