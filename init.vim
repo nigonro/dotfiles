@@ -1,5 +1,6 @@
 call plug#begin('~/.vim/plugged')
 
+Plug 'altercation/vim-colors-solarized'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ConradIrwin/vim-bracketed-paste'
 Plug 'scrooloose/nerdtree'
@@ -21,21 +22,16 @@ Plug 'luan/vim-concourse'
 Plug 'cespare/vim-toml'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'jiangmiao/auto-pairs'
-Plug 'roxma/nvim-yarp'
-Plug 'roxma/vim-hug-neovim-rpc'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'itchyny/lightline.vim'
 Plug 'w0rp/ale'
-Plug 'SirVer/ultisnips'
-Plug 'altercation/vim-colors-solarized'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
 Plug 'posva/vim-vue'
 Plug 'flowtype/vim-flow'
-Plug 'wannesm/wmgraphviz.vim'
 
 call plug#end()
 
@@ -43,6 +39,7 @@ call plug#end()
 " general
 " -----------------
 set nocompatible
+set title
 set noerrorbells
 set backspace=indent,eol,start
 set showcmd
@@ -68,7 +65,6 @@ set hlsearch
 set ignorecase
 set smartcase
 set number
-"set relativenumber
 set ruler
 set noshowmatch
 set noshowmode
@@ -119,10 +115,9 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 " tabs
 " -----------------
 set tabstop=4
-"set expandtab
 set softtabstop=4
 set shiftwidth=4
-"retab
+retab
 set autoindent
 set backspace=indent,eol,start
 noremap <Tab> ^==<Esc>
@@ -175,18 +170,12 @@ set display+=lastline
 " -----------------
 syntax enable
 set t_Co=256
-
-"let g:rehash256 = 1
-"set background=dark
-"let g:molokai_original = 1
-"colorscheme molokai
 colorscheme solarized
-"highlight ColorColumn ctermbg=236
 
 " -----------------
 " filetypes
 " -----------------
-autocmd BufNewFile,BufRead *.js,*.jsx setlocal noet ts=2 sts=2 sw=2
+autocmd BufNewFile,BufRead *.js,*.jsx setlocal et ts=2 sts=2 sw=2
 autocmd BufNewFile,BufRead *.go setlocal noet ts=4 sw=4 sts=4
 autocmd BufNewFile,BufRead *.ino setlocal noet ts=4 sw=4 sts=4
 autocmd BufNewFile,BufRead *.txt setlocal noet ts=4 sw=4
@@ -210,9 +199,7 @@ nmap <space> <C-d>
 nmap <S-space> <C-u>
 
 let mapleader = ","
-let maplocalleader = ","
 let g:mapleader = ","
-let g:maplocalleader = ","
 
 " Some useful quickfix shortcuts for quickfix
 "map <C-n> :cn<CR>
@@ -282,6 +269,9 @@ vnoremap L g_
 "  plugins
 " -----------------
 
+"  hardmode
+nnoremap <leader>h <Esc>:call ToggleHardMode()<CR>
+
 "  diminactive
 let g:diminactive_use_colorcolumn = 1
 
@@ -333,20 +323,20 @@ endfunction
 augroup go
   autocmd!
 
-  autocmd FileType go nmap <silent> <localleader>v <Plug>(go-def-vertical)
-  autocmd FileType go nmap <silent> <localleader>s <Plug>(go-def-split)
+  autocmd FileType go nmap <silent> <Leader>v <Plug>(go-def-vertical)
+  autocmd FileType go nmap <silent> <Leader>s <Plug>(go-def-split)
 
-  autocmd FileType go nmap <silent> <localleader>x <Plug>(go-doc-vertical)
+  autocmd FileType go nmap <silent> <Leader>x <Plug>(go-doc-vertical)
 
-  autocmd FileType go nmap <silent> <localleader>i <Plug>(go-info)
-  autocmd FileType go nmap <silent> <localleader>l <Plug>(go-metalinter)
+  autocmd FileType go nmap <silent> <Leader>i <Plug>(go-info)
+  autocmd FileType go nmap <silent> <Leader>l <Plug>(go-metalinter)
 
-  autocmd FileType go nmap <silent> <localleader>b :<C-u>call <SID>build_go_files()<CR>
-  autocmd FileType go nmap <silent> <localleader>t  <Plug>(go-test)
-  autocmd FileType go nmap <silent> <localleader>r  <Plug>(go-run)
-  autocmd FileType go nmap <silent> <localleader>e  <Plug>(go-install)
+  autocmd FileType go nmap <silent> <leader>b :<C-u>call <SID>build_go_files()<CR>
+  autocmd FileType go nmap <silent> <leader>t  <Plug>(go-test)
+  autocmd FileType go nmap <silent> <leader>r  <Plug>(go-run)
+  autocmd FileType go nmap <silent> <leader>e  <Plug>(go-install)
 
-  autocmd FileType go nmap <silent> <localleader>c <Plug>(go-coverage-toggle)
+  autocmd FileType go nmap <silent> <Leader>c <Plug>(go-coverage-toggle)
 
   " I like these more!
   autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
@@ -389,44 +379,29 @@ call deoplete#custom#source('_', 'converters', ['converter_remove_paren'])
 call deoplete#custom#source('_', 'disabled_syntaxes', ['Comment', 'String'])
 
 " <TAB>: completion.
-"inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 
 " <C-h>, <BS>: close popup and delete backword char.
 "inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
 "inoremap <expr><BS>  deoplete#smart_close_popup()."\<C-h>"
 
 " <CR>: close popup and save indent.
-"inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-"function! s:my_cr_function() abort
-    "return deoplete#close_popup() . "\<CR>"
-"endfunction
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function() abort
+    return deoplete#close_popup() . "\<CR>"
+endfunction
 
 " <CR>: If popup menu visible, expand snippet or close popup with selection,
 "       Otherwise, check if within empty pair and use delimitMate.
 "inoremap <silent><expr><CR> pumvisible() ?
-	"\ (neosnippet#expandable() ? neosnippet#mappings#expand_impl() : deoplete#close_popup())
-		"\ : (delimitMate#WithinEmptyPair() ? "\<C-R>=delimitMate#ExpandReturn()\<CR>" : "\<CR>")
-
-" <Tab> completion:
-" 1. If popup menu is visible, select and insert next item
-" 2. Otherwise, if within a snippet, jump to next input
-" 3. Otherwise, if preceding chars are whitespace, insert tab char
-" 4. Otherwise, start manual autocomplete
-imap <silent><expr><Tab> pumvisible() ? "\<Down>"
-	\ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
-	\ : (<SID>is_whitespace() ? "\<Tab>"
-	\ : deoplete#manual_complete()))
-
-smap <silent><expr><Tab> pumvisible() ? "\<Down>"
-	\ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
-	\ : (<SID>is_whitespace() ? "\<Tab>"
-	\ : deoplete#manual_complete()))
+    "\ (neosnippet#expandable() ? neosnippet#mappings#expand_impl() : deoplete#close_popup())
+        "\ : (delimitMate#WithinEmptyPair() ? "\<C-R>=delimitMate#ExpandReturn()\<CR>" : "\<CR>")
 
 inoremap <expr><S-Tab>  pumvisible() ? "\<Up>" : "\<C-h>"
 
 function! s:is_whitespace() "{{{
-	let col = col('.') - 1
-	return ! col || getline('.')[col - 1] =~? '\s'
+    let col = col('.') - 1
+    return ! col || getline('.')[col - 1] =~? '\s'
 endfunction
 
 " Enable omni completion.
@@ -498,44 +473,6 @@ let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
 let g:ale_open_list = 1
 let g:ale_keep_list_window_open = 0
-
-" ultisnips
-" -----------------
-function! g:UltiSnips_Complete()
-  call UltiSnips#ExpandSnippet()
-  if g:ulti_expand_res == 0
-    if pumvisible()
-      return "\<C-n>"
-    else
-      call UltiSnips#JumpForwards()
-      if g:ulti_jump_forwards_res == 0
-        return "\<TAB>"
-      endif
-    endif
-  endif
-  return ""
-endfunction
-
-function! g:UltiSnips_Reverse()
-  call UltiSnips#JumpBackwards()
-  if g:ulti_jump_backwards_res == 0
-    return "\<C-P>"
-  endif
-
-  return ""
-endfunction
-
-
-if !exists("g:UltiSnipsJumpForwardTrigger")
-  let g:UltiSnipsJumpForwardTrigger = "<tab>"
-endif
-
-if !exists("g:UltiSnipsJumpBackwardTrigger")
-  let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-endif
-
-au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
 
 " rust
 " -----------------
