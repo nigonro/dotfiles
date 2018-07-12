@@ -4,6 +4,7 @@ Plug 'altercation/vim-colors-solarized'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ConradIrwin/vim-bracketed-paste'
 Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'scrooloose/nerdcommenter'
 Plug 'elzr/vim-json', {'for' : 'json'}
 Plug 'ntpeters/vim-better-whitespace'
@@ -32,6 +33,8 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
 Plug 'posva/vim-vue'
 Plug 'flowtype/vim-flow'
+Plug 'uarun/vim-protobuf'
+Plug 'SirVer/ultisnips'
 
 call plug#end()
 
@@ -195,8 +198,8 @@ nnoremap <leader>m :bd<CR>
 " -----------------
 nnoremap <CR> :w<CR>
 imap kj <Esc>
-nmap <space> <C-d>
-nmap <S-space> <C-u>
+nnoremap <S-Space> <C-u>
+nnoremap <Space> <C-d>
 
 let mapleader = ","
 let g:mapleader = ","
@@ -216,9 +219,6 @@ augroup END
 " Fast saving
 nnoremap <leader>w :w!<cr>
 nnoremap <silent> <leader>q :q!<CR>
-
-" Center the screen
-"nnoremap <space> zz
 
 " Remove search highlight
 nnoremap <leader><space> :nohlsearch<CR>
@@ -269,11 +269,47 @@ vnoremap L g_
 "  plugins
 " -----------------
 
-"  hardmode
-nnoremap <leader>h <Esc>:call ToggleHardMode()<CR>
-
 "  diminactive
+" -----------------
 let g:diminactive_use_colorcolumn = 1
+
+"  UltiSnips
+" -----------------
+function! g:UltiSnips_Complete()
+  call UltiSnips#ExpandSnippet()
+  if g:ulti_expand_res == 0
+    if pumvisible()
+      return "\<C-n>"
+    else
+      call UltiSnips#JumpForwards()
+      if g:ulti_jump_forwards_res == 0
+        return "\<TAB>"
+      endif
+    endif
+  endif
+  return ""
+endfunction
+
+function! g:UltiSnips_Reverse()
+  call UltiSnips#JumpBackwards()
+  if g:ulti_jump_backwards_res == 0
+    return "\<C-P>"
+  endif
+
+  return ""
+endfunction
+
+
+if !exists("g:UltiSnipsJumpForwardTrigger")
+  let g:UltiSnipsJumpForwardTrigger = "<tab>"
+endif
+
+if !exists("g:UltiSnipsJumpBackwardTrigger")
+  let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+endif
+
+au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
 
 "  vim-go
 " -----------------
@@ -373,43 +409,14 @@ let g:deoplete#ignore_sources._ = ['buffer', 'member', 'tag', 'file', 'neosnippe
 let g:deoplete#sources#go#sort_class = ['func', 'type', 'var', 'const']
 let g:deoplete#sources#go#align_class = 1
 
+
 " Use partial fuzzy matches like YouCompleteMe
 call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy'])
 call deoplete#custom#source('_', 'converters', ['converter_remove_paren'])
 call deoplete#custom#source('_', 'disabled_syntaxes', ['Comment', 'String'])
 
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-
-" <C-h>, <BS>: close popup and delete backword char.
-"inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
-"inoremap <expr><BS>  deoplete#smart_close_popup()."\<C-h>"
-
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function() abort
-    return deoplete#close_popup() . "\<CR>"
-endfunction
-
-" <CR>: If popup menu visible, expand snippet or close popup with selection,
-"       Otherwise, check if within empty pair and use delimitMate.
-"inoremap <silent><expr><CR> pumvisible() ?
-    "\ (neosnippet#expandable() ? neosnippet#mappings#expand_impl() : deoplete#close_popup())
-        "\ : (delimitMate#WithinEmptyPair() ? "\<C-R>=delimitMate#ExpandReturn()\<CR>" : "\<CR>")
-
-inoremap <expr><S-Tab>  pumvisible() ? "\<Up>" : "\<C-h>"
-
-function! s:is_whitespace() "{{{
-    let col = col('.') - 1
-    return ! col || getline('.')[col - 1] =~? '\s'
-endfunction
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+inoremap <silent><expr> <Tab>
+    \ pumvisible() ? "\<C-n>" : deoplete#manual_complete()
 
 " Lightline
 " -----------------
