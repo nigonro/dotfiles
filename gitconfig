@@ -1,6 +1,6 @@
 [user]
-	name = Nicolas Gonzalez Rodriguez
-	email = n@rrz.cc
+	name = nigonro
+	email = nicolas+github@flia.gr
 [core]
 	editor = vim
 [color]
@@ -16,5 +16,5 @@
 	unstage = reset HEAD --
 	last = log -1 HEAD
   ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue \\ [%cn]" --decorate
-  ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue \\ [%cn]" --decorate --numstat
+  ll = diff-tree --no-commit-id --name-only -r
   lt = ls-tree -r master --name-only

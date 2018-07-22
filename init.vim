@@ -1,10 +1,8 @@
 call plug#begin('~/.vim/plugged')
 
-Plug 'altercation/vim-colors-solarized'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'ConradIrwin/vim-bracketed-paste'
 Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'scrooloose/nerdcommenter'
 Plug 'elzr/vim-json', {'for' : 'json'}
 Plug 'ntpeters/vim-better-whitespace'
@@ -22,19 +20,22 @@ Plug 'tpope/vim-surround'
 Plug 'luan/vim-concourse'
 Plug 'cespare/vim-toml'
 Plug 'dart-lang/dart-vim-plugin'
-Plug 'jiangmiao/auto-pairs'
+Plug 'roxma/nvim-yarp'
+Plug 'roxma/vim-hug-neovim-rpc'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'nsf/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' }
 Plug 'zchee/deoplete-go', { 'do': 'make'}
 Plug 'itchyny/lightline.vim'
 Plug 'w0rp/ale'
+Plug 'SirVer/ultisnips'
+Plug 'altercation/vim-colors-solarized'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'rust-lang/rust.vim'
 Plug 'posva/vim-vue'
 Plug 'flowtype/vim-flow'
-Plug 'uarun/vim-protobuf'
-Plug 'SirVer/ultisnips'
+Plug 'wannesm/wmgraphviz.vim'
+Plug 'Raimondi/delimitMate'
 
 call plug#end()
 
@@ -42,7 +43,6 @@ call plug#end()
 " general
 " -----------------
 set nocompatible
-set title
 set noerrorbells
 set backspace=indent,eol,start
 set showcmd
@@ -68,6 +68,7 @@ set hlsearch
 set ignorecase
 set smartcase
 set number
+"set relativenumber
 set ruler
 set noshowmatch
 set noshowmode
@@ -118,9 +119,10 @@ let &t_EI = "\<Esc>]50;CursorShape=0\x7"
 " tabs
 " -----------------
 set tabstop=4
+"set expandtab
 set softtabstop=4
 set shiftwidth=4
-retab
+"retab
 set autoindent
 set backspace=indent,eol,start
 noremap <Tab> ^==<Esc>
@@ -173,12 +175,18 @@ set display+=lastline
 " -----------------
 syntax enable
 set t_Co=256
+
+"let g:rehash256 = 1
+"set background=dark
+"let g:molokai_original = 1
+"colorscheme molokai
 colorscheme solarized
+"highlight ColorColumn ctermbg=236
 
 " -----------------
 " filetypes
 " -----------------
-autocmd BufNewFile,BufRead *.js,*.jsx setlocal et ts=2 sts=2 sw=2
+autocmd BufNewFile,BufRead *.js,*.jsx setlocal noet ts=2 sts=2 sw=2
 autocmd BufNewFile,BufRead *.go setlocal noet ts=4 sw=4 sts=4
 autocmd BufNewFile,BufRead *.ino setlocal noet ts=4 sw=4 sts=4
 autocmd BufNewFile,BufRead *.txt setlocal noet ts=4 sw=4
@@ -188,21 +196,26 @@ autocmd BufNewFile,BufRead *.vim setlocal et sw=2 ts=2
 " -----------------
 " buffer navigation
 " -----------------
-nnoremap <C-x> :bnext<CR>
-nnoremap <C-z> :bprev<CR>
+nnoremap <S-left> :bnext<CR>
+nnoremap <S-right> :bprev<CR>
 nnoremap <leader>o :only<CR>
 nnoremap <leader>m :bd<CR>
+
+" Switch between the last two files
+nnoremap <leader><leader> <C-^>
 
 " -----------------
 "  mappings
 " -----------------
 nnoremap <CR> :w<CR>
 imap kj <Esc>
-nnoremap <S-Space> <C-u>
-nnoremap <Space> <C-d>
+nmap <space> <C-d>
+nmap <S-space> <C-u>
 
 let mapleader = ","
+let maplocalleader = ","
 let g:mapleader = ","
+let g:maplocalleader = ","
 
 " Some useful quickfix shortcuts for quickfix
 "map <C-n> :cn<CR>
@@ -219,6 +232,9 @@ augroup END
 " Fast saving
 nnoremap <leader>w :w!<cr>
 nnoremap <silent> <leader>q :q!<CR>
+
+" Center the screen
+"nnoremap <space> zz
 
 " Remove search highlight
 nnoremap <leader><space> :nohlsearch<CR>
@@ -270,109 +286,39 @@ vnoremap L g_
 " -----------------
 
 "  diminactive
-" -----------------
 let g:diminactive_use_colorcolumn = 1
-
-"  UltiSnips
-" -----------------
-function! g:UltiSnips_Complete()
-  call UltiSnips#ExpandSnippet()
-  if g:ulti_expand_res == 0
-    if pumvisible()
-      return "\<C-n>"
-    else
-      call UltiSnips#JumpForwards()
-      if g:ulti_jump_forwards_res == 0
-        return "\<TAB>"
-      endif
-    endif
-  endif
-  return ""
-endfunction
-
-function! g:UltiSnips_Reverse()
-  call UltiSnips#JumpBackwards()
-  if g:ulti_jump_backwards_res == 0
-    return "\<C-P>"
-  endif
-
-  return ""
-endfunction
-
-
-if !exists("g:UltiSnipsJumpForwardTrigger")
-  let g:UltiSnipsJumpForwardTrigger = "<tab>"
-endif
-
-if !exists("g:UltiSnipsJumpBackwardTrigger")
-  let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
-endif
-
-au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
-au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
 
 "  vim-go
 " -----------------
 let g:go_fmt_fail_silently = 1
 let g:go_fmt_command = "goimports"
-let g:go_list_type = "quickfix"
-let g:go_auto_type_info = 0
-let g:go_def_mode = "guru"
-let g:go_echo_command_info = 1
-let g:go_gocode_autobuild = 0
-let g:go_gocode_unimported_packages = 1
-
 let g:go_autodetect_gopath = 1
-let g:go_info_mode = "guru"
-
-" let g:go_metalinter_autosave = 1
-" let g:go_metalinter_autosave_enabled = ['vet', 'golint']
-
+let g:go_term_enabled = 1
+let g:go_snippet_engine = "neosnippet"
 let g:go_highlight_space_tab_error = 0
 let g:go_highlight_array_whitespace_error = 0
 let g:go_highlight_trailing_whitespace_error = 0
 let g:go_highlight_extra_types = 0
+let g:go_highlight_operators = 0
 let g:go_highlight_build_constraints = 1
-let g:go_highlight_types = 0
-
-let g:go_modifytags_transform = 'camelcase'
-let g:go_disable_autoinstall = 0
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_build_constraints = 1
-
-nmap <C-g> :GoDecls<cr>
-imap <C-g> <esc>:<C-u>GoDecls<cr>
-
-" run :GoBuild or :GoTestCompile based on the go file
-function! s:build_go_files()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#test#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
 
 augroup go
   autocmd!
 
-  autocmd FileType go nmap <silent> <Leader>v <Plug>(go-def-vertical)
-  autocmd FileType go nmap <silent> <Leader>s <Plug>(go-def-split)
+  autocmd FileType go nmap <silent> <localleader>v <Plug>(go-def-vertical)
+  autocmd FileType go nmap <silent> <localleader>s <Plug>(go-def-split)
 
-  autocmd FileType go nmap <silent> <Leader>x <Plug>(go-doc-vertical)
+  autocmd FileType go nmap <silent> <localleader>x <Plug>(go-doc-vertical)
 
-  autocmd FileType go nmap <silent> <Leader>i <Plug>(go-info)
-  autocmd FileType go nmap <silent> <Leader>l <Plug>(go-metalinter)
+  autocmd FileType go nmap <silent> <localleader>i <Plug>(go-info)
+  autocmd FileType go nmap <silent> <localleader>l <Plug>(go-metalinter)
 
-  autocmd FileType go nmap <silent> <leader>b :<C-u>call <SID>build_go_files()<CR>
-  autocmd FileType go nmap <silent> <leader>t  <Plug>(go-test)
-  autocmd FileType go nmap <silent> <leader>r  <Plug>(go-run)
-  autocmd FileType go nmap <silent> <leader>e  <Plug>(go-install)
+  autocmd FileType go nmap <silent> <localleader>b :<C-u>call <SID>build_go_files()<CR>
+  autocmd FileType go nmap <silent> <localleader>t  <Plug>(go-test)
+  autocmd FileType go nmap <silent> <localleader>r  <Plug>(go-run)
+  autocmd FileType go nmap <silent> <localleader>e  <Plug>(go-install)
 
-  autocmd FileType go nmap <silent> <Leader>c <Plug>(go-coverage-toggle)
+  autocmd FileType go nmap <silent> <localleader>c <Plug>(go-coverage-toggle)
 
   " I like these more!
   autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
@@ -405,18 +351,50 @@ let g:vim_json_syntax_conceal = 0
 " -----------------
 let g:deoplete#enable_at_startup = 1
 let g:deoplete#ignore_sources = {}
-let g:deoplete#ignore_sources._ = ['buffer', 'member', 'tag', 'file', 'neosnippet']
-let g:deoplete#sources#go#sort_class = ['func', 'type', 'var', 'const']
+let g:deoplete#ignore_sources._ = ['member', 'tag']
 let g:deoplete#sources#go#align_class = 1
-
+let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+set completeopt+=noselect
 
 " Use partial fuzzy matches like YouCompleteMe
-call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy'])
-call deoplete#custom#source('_', 'converters', ['converter_remove_paren'])
+call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy', 'matcher_length'])
+call deoplete#custom#source('_', 'converters', ['converter_auto_paren'])
 call deoplete#custom#source('_', 'disabled_syntaxes', ['Comment', 'String'])
 
-inoremap <silent><expr> <Tab>
-    \ pumvisible() ? "\<C-n>" : deoplete#manual_complete()
+" <CR>: If popup menu visible, expand snippet or close popup with selection,
+"       Otherwise, check if within empty pair and use delimitMate.
+inoremap <silent><expr><CR> pumvisible() ?
+  \ (neosnippet#expandable() ? neosnippet#mappings#expand_impl() : deoplete#close_popup())
+  \ : (delimitMate#WithinEmptyPair() ? "\<C-R>=delimitMate#ExpandReturn()\<CR>" : "\<CR>")
+
+" <Tab> completion:
+" 1. If popup menu is visible, select and insert next item
+" 2. Otherwise, if within a snippet, jump to next input
+" 3. Otherwise, if preceding chars are whitespace, insert tab char
+" 4. Otherwise, start manual autocomplete
+imap <silent><expr><Tab> pumvisible() ? "\<Down>"
+	\ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
+	\ : (<SID>is_whitespace() ? "\<Tab>"
+	\ : deoplete#manual_complete()))
+
+smap <silent><expr><Tab> pumvisible() ? "\<Down>"
+	\ : (neosnippet#jumpable() ? "\<Plug>(neosnippet_jump)"
+	\ : (<SID>is_whitespace() ? "\<Tab>"
+	\ : deoplete#manual_complete()))
+
+inoremap <expr><S-Tab>  pumvisible() ? "\<Up>" : "\<C-h>"
+
+function! s:is_whitespace() "{{{
+	let col = col('.') - 1
+	return ! col || getline('.')[col - 1] =~? '\s'
+endfunction
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 
 " Lightline
 " -----------------
@@ -478,8 +456,48 @@ let g:ale_lint_on_text_changed = "never"
 let g:ale_lint_on_enter = 0
 let g:ale_set_loclist = 0
 let g:ale_set_quickfix = 1
-let g:ale_open_list = 1
+let g:ale_open_list = 0
 let g:ale_keep_list_window_open = 0
+
+" ultisnips
+" -----------------
+let g:UltiSnipsSnippetDirectories=[$HOME.'/.vim/snippets']
+
+function! g:UltiSnips_Complete()
+  call UltiSnips#ExpandSnippet()
+  if g:ulti_expand_res == 0
+    if pumvisible()
+      return "\<C-n>"
+    else
+      call UltiSnips#JumpForwards()
+      if g:ulti_jump_forwards_res == 0
+        return "\<TAB>"
+      endif
+    endif
+  endif
+  return ""
+endfunction
+
+function! g:UltiSnips_Reverse()
+  call UltiSnips#JumpBackwards()
+  if g:ulti_jump_backwards_res == 0
+    return "\<C-P>"
+  endif
+
+  return ""
+endfunction
+
+
+if !exists("g:UltiSnipsJumpForwardTrigger")
+  let g:UltiSnipsJumpForwardTrigger = "<tab>"
+endif
+
+if !exists("g:UltiSnipsJumpBackwardTrigger")
+  let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+endif
+
+au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsExpandTrigger . " <C-R>=g:UltiSnips_Complete()<cr>"
+au InsertEnter * exec "inoremap <silent> " . g:UltiSnipsJumpBackwardTrigger . " <C-R>=g:UltiSnips_Reverse()<cr>"
 
 " rust
 " -----------------

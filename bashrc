@@ -4,6 +4,17 @@ case $- in
       *) return;;
 esac
 
+# TMUX
+if which tmux >/dev/null 2>&1; then
+    # if no session is started, start a new session
+    test -z ${TMUX} && tmux
+
+    # when quitting tmux, try to attach
+    while test -z ${TMUX}; do
+        tmux attach || break
+    done
+fi
+
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
@@ -26,7 +37,7 @@ export PATH=$PATH:$HOME/.bin
 
 # prompt
 GIT_PROMPT_ONLY_IN_REPO=0
-GIT_PROMPT_THEME=nigonro
+GIT_PROMPT_THEME="Custom"
 source ~/.bash-git-prompt/gitprompt.sh
 
 # some useful aliases
@@ -74,12 +85,13 @@ _fly-cli() {
 complete -F _fly-cli fly
 
 # default editor setup
-export EDITOR=vim
+export EDITOR=nvim
 
 # go setup
 export GOPATH=$HOME/code/go
+alias gop='export GOPATH=$GOPATH:$(pwd | awk -F"src" "{print \$1}"); echo "set GOPATH to $GOPATH"'
 export PATH=$PATH:$GOPATH/bin
-export CDPATH=.:$GOPATH/src/github.com/vwdilab:$GOPATH/src/github.com/$USER
+export CDPATH=.:$HOME/code:$GOPATH/src/github.com/nigonro:$GOPATH/src/github.com/vwdilab
 
 got() {
     if [ -d "vendor" ]; then
@@ -106,3 +118,13 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+#Xtensa toolchain for ESP8266
+export PATH=/home/nigonro/code/esp/esp-open-sdk/xtensa-lx106-elf/bin:$PATH
+
+# aws cli
+complete -C '/usr/bin/aws_completer' aws
+
+# X clipboard
+alias pbcopy='xclip -selection clipboard'
+alias pbpaste='xclip -selection clipboard -o'
