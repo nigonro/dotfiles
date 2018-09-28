@@ -1,0 +1,34 @@
+# shorthand variable declaration
+snippet : "v := value"
+${1} := ${0}
+endsnippet
+
+# struct
+snippet tys "type T struct { ... }"
+type ${1:Type} struct {
+	${0}
+}
+endsnippet
+
+# method
+snippet meth "method declaration"
+func (${1:receiver} ${2:type}) ${3:method}($4) $5 {
+	${0}
+}
+endsnippet
+
+
+# struct
+snippet tyi "type T interface { ... }"
+type ${1:Type} interface {
+	${0}
+}
+endsnippet
+
+# if err
+snippet iferr
+if err != nil {
+	${0}
+}
+endsnippet
+
