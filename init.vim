@@ -37,12 +37,7 @@ Plug 'w0rp/ale'
 Plug 'blueyed/vim-diminactive'
 Plug 'Raimondi/delimitMate'
 Plug 'jlanzarotta/bufexplorer'
-
-" Vim only plugins
-if !has('nvim')
-    Plug 'Shougo/vimproc.vim', {'do' : 'make'}  " Needed to make sebdah/vim-delve work on Vim
-    Plug 'Shougo/vimshell.vim'                  " Needed to make sebdah/vim-delve work on Vim
-endif
+Plug 'Yggdroot/indentLine'
 
 " Language support
 Plug 'cespare/vim-toml'                        " toml syntax highlighting
@@ -56,6 +51,7 @@ Plug 'plasticboy/vim-markdown'                 " Markdown syntax highlighting
 Plug 'zchee/deoplete-go', { 'do': 'make'}      " Go auto completion
 Plug 'zchee/deoplete-jedi'                     " Go auto completion
 Plug 'dart-lang/dart-vim-plugin'
+Plug 'stephpy/vim-yaml'
 
 " Colorschemes
 Plug 'altercation/vim-colors-solarized'
@@ -70,14 +66,12 @@ set smartindent                   " enable smart indentation
 set autoread                      " reload file if the file changes on the disk
 set autowrite                     " write when switching buffers
 set autowriteall                  " write on :quit
-set clipboard=unnamedplus
+set clipboard+=unnamedplus
 set colorcolumn=81                " highlight the 80th column as an indicator
 set completeopt-=preview          " remove the horrendous preview window
 set cursorline                    " highlight the current line for the cursor
 set encoding=utf-8
 set expandtab                     " expands tabs to spaces
-"set list                          " show trailing whitespace
-"set listchars=tab:\|\ ,trail:▫
 set nospell                       " disable spelling
 set noswapfile                    " disable swapfile usage
 set nowrap
@@ -95,16 +89,6 @@ set backspace=indent,eol,start
 syntax sync minlines=256
 set synmaxcol=300
 set re=1
-
-" neovim specific settings
-if has('nvim')
-    " Set the Python binaries neovim is using. Please note that you will need to
-    " install the neovim package for these binaries separately like this for
-    " example:
-    " pip3.6 install -U neovim
-    let g:python_host_prog = '/usr/bin/python2'
-    let g:python3_host_prog = '/usr/bin/python3'
-endif
 
 " Enable mouse if possible
 if has('mouse')
@@ -266,7 +250,7 @@ if has('nvim')
     let g:deoplete#enable_at_startup = 1
     let g:deoplete#ignore_sources = {}
     let g:deoplete#ignore_sources._ = ['buffer', 'member', 'tag', 'file']
-    let g:deoplete#sources#go#sort_class = ['func', 'type', 'var', 'const']
+    let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
     let g:deoplete#sources#go#align_class = 1
 
 
