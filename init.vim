@@ -52,6 +52,8 @@ Plug 'zchee/deoplete-go', { 'do': 'make'}      " Go auto completion
 Plug 'zchee/deoplete-jedi'                     " Go auto completion
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'stephpy/vim-yaml'
+Plug 'alvan/vim-closetag'
+Plug 'mattn/emmet-vim'
 
 " Colorschemes
 Plug 'altercation/vim-colors-solarized'
@@ -77,6 +79,7 @@ set noswapfile                    " disable swapfile usage
 set nowrap
 set noerrorbells                  " No bells!
 set novisualbell                  " I said, no bells!
+set noshowmode
 set number                        " show number ruler
 set ruler
 set formatoptions=tcqronj         " set vims text formatting options
@@ -106,6 +109,8 @@ autocmd BufLeave * silent! :wa
 
 " Remove trailing white spaces on save
 autocmd BufWritePre * :%s/\s\+$//e
+
+au BufEnter * if &buftype == 'terminal' | :startinsert | endif
 
 " Center the screen quickly
 nnoremap <space> zz
@@ -165,8 +170,8 @@ noremap <Tab> ^==<Esc>
 "----------------------------------------------
 " Colors
 "----------------------------------------------
-"set background=dark
 colorscheme solarized
+set background=light
 
 " Override the search highlight color with a combination that is easier to
 " read. The default PaperColor is dark green backgroun with black foreground.
@@ -177,6 +182,8 @@ highlight Search guibg=DeepPink4 guifg=White ctermbg=53 ctermfg=White
 
 " Toggle background with <leader>bg
 map <leader>bg :let &background = (&background == "dark"? "light" : "dark")<cr>
+
+highlight TermCursor ctermfg=red guifg=red
 
 "----------------------------------------------
 " Searching
@@ -236,6 +243,11 @@ nnoremap vs :split<cr>
 
 " Closing splits
 nnoremap <leader>q :close<cr>
+
+"----------------------------------------------
+" Plugin: ervandew/supertab
+"----------------------------------------------
+let g:SuperTabDefaultCompletionType = "<c-n>"
 
 "----------------------------------------------
 " Plugin: blueyed/vim-diminactive
@@ -476,7 +488,7 @@ au FileType vimwiki set tabstop=2
 let g:deoplete#sources#go#pointer = 1
 
 "----------------------------------------------
-" Language: Golang
+" Language: fatih/vim-go
 "----------------------------------------------
 au FileType go set noexpandtab
 au FileType go set shiftwidth=4
@@ -494,18 +506,18 @@ let g:go_debug_windows = {
       \ 'stack': 'botright 10new',
 \ }
 
-
+let g:go_template_autocreate = 0
 let g:go_test_prepend_name = 1
 let g:go_list_type = "quickfix"
-let g:go_auto_type_info = 0
-let g:go_auto_sameids = 0
-let g:go_info_mode = "gocode"
+let g:go_info_mode = "guru"
 
 let g:go_def_mode = "guru"
 let g:go_echo_command_info = 1
 let g:go_autodetect_gopath = 1
 let g:go_metalinter_autosave_enabled = ['vet', 'golint']
 let g:go_metalinter_enabled = ['vet', 'golint']
+
+let g:go_gocode_unimported_packages = 1
 
 let g:go_highlight_space_tab_error = 0
 let g:go_highlight_array_whitespace_error = 0
@@ -585,7 +597,9 @@ let g:delimitMate_expand_cr = 1
 let g:delimitMate_expand_space = 1
 let g:delimitMate_smart_quotes = 1
 let g:delimitMate_expand_inside_quotes = 0
+let g:delimitMate_jump_expansion = 1
 let g:delimitMate_smart_matchpairs = '^\%(\w\|\$\)'
+let g:delimitMate_excluded_ft = "html"
 
 imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
 "----------------------------------------------
