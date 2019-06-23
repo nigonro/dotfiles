@@ -12,11 +12,8 @@ Plug 'godlygeek/tabular'           " This must come before plasticboy/vim-markdo
 Plug 'tpope/vim-rhubarb'           " Depenency for tpope/fugitive
 
 " General plugins
-Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-Plug 'ervandew/supertab'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'ctrlpvim/ctrlp.vim'          " CtrlP is installed to support tag finding in vim-go
-Plug 'editorconfig/editorconfig-vim'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 Plug 'majutsushi/tagbar'
@@ -33,27 +30,29 @@ Plug 'tpope/vim-surround'
 Plug 'vimwiki/vimwiki'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'itchyny/lightline.vim'
-Plug 'w0rp/ale'
 Plug 'blueyed/vim-diminactive'
 Plug 'Raimondi/delimitMate'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'Yggdroot/indentLine'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'prabirshrestha/asyncomplete-buffer.vim'
+Plug 'Shougo/neosnippet.vim'
+Plug 'Shougo/neosnippet-snippets'
+Plug 'prabirshrestha/asyncomplete-neosnippet.vim'
 
 " Language support
 Plug 'cespare/vim-toml'                        " toml syntax highlighting
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'kylef/apiblueprint.vim'                  " API Blueprint syntax highlighting
-Plug 'leafgarland/typescript-vim'              " TypeScript syntax highlighting
-Plug 'mxw/vim-jsx'                             " JSX syntax highlighting
-Plug 'mdempsky/gocode', { 'rtp': 'vim', 'do': '~/.vim/plugged/gocode/vim/symlink.sh' } " Go auto completion
-Plug 'pangloss/vim-javascript'                 " JavaScript syntax highlighting
 Plug 'plasticboy/vim-markdown'                 " Markdown syntax highlighting
-Plug 'zchee/deoplete-go', { 'do': 'make'}      " Go auto completion
-Plug 'zchee/deoplete-jedi'                     " Go auto completion
-Plug 'dart-lang/dart-vim-plugin'
 Plug 'stephpy/vim-yaml'
 Plug 'alvan/vim-closetag'
 Plug 'mattn/emmet-vim'
+Plug 'uarun/vim-protobuf'
+Plug 'liuchengxu/graphviz.vim'
 
 " Colorschemes
 Plug 'altercation/vim-colors-solarized'
@@ -162,16 +161,33 @@ let g:mapleader = ","
 let g:maplocalleader = ","
 
 " Faster split
-noremap vv <C-W>v
-noremap vs <C-W>s
+noremap sv <C-W>v
+noremap sh <C-W>s
 
 noremap <Tab> ^==<Esc>
 
+"function AddLines(count)
+  "echom v:count
+  "call append(line("."), repeat([""], 1))
+"endfunction
+
+"nnoremap <silent> <leader>o :AddLines(v:count)<CR>
+"nnoremap <silent> <leader>O :<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>
+
+nnoremap <leader>rc :source $MYVIMRC<cr>
 "----------------------------------------------
 " Colors
 "----------------------------------------------
-colorscheme solarized
+if &term =~ '256color'
+    " disable Background Color Erase (BCE) so that color schemes
+    " render properly when inside 256-color tmux and GNU screen.
+    " see also http://sunaku.github.io/vim-256color-bce.html
+    set t_ut=
+endif
+
+set t_Co=256
 set background=light
+colorscheme solarized
 
 " Override the search highlight color with a combination that is easier to
 " read. The default PaperColor is dark green backgroun with black foreground.
@@ -184,12 +200,16 @@ highlight Search guibg=DeepPink4 guifg=White ctermbg=53 ctermfg=White
 map <leader>bg :let &background = (&background == "dark"? "light" : "dark")<cr>
 
 highlight TermCursor ctermfg=red guifg=red
+highlight Search ctermfg=red guifg=red ctermbg=black guibg=black
+highlight SignColumn ctermbg=black
 
 "----------------------------------------------
 " Searching
 "----------------------------------------------
 set incsearch                     " move to match as you type the search query
 set hlsearch                      " disable search result highlighting
+set ignorecase
+set smartcase
 
 if has('nvim')
     set inccommand=split          " enables interactive search and replace
@@ -245,41 +265,9 @@ nnoremap vs :split<cr>
 nnoremap <leader>q :close<cr>
 
 "----------------------------------------------
-" Plugin: ervandew/supertab
-"----------------------------------------------
-let g:SuperTabDefaultCompletionType = "<c-n>"
-
-"----------------------------------------------
 " Plugin: blueyed/vim-diminactive
 "----------------------------------------------
 let g:diminactive_use_colorcolumn = 1
-
-"----------------------------------------------
-" Plugin: Shougo/deoplete.nvim
-"----------------------------------------------
-if has('nvim')
-    " Enable deoplete on startup
-    let g:deoplete#enable_at_startup = 1
-    let g:deoplete#ignore_sources = {}
-    let g:deoplete#ignore_sources._ = ['buffer', 'member', 'tag', 'file']
-    let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-    let g:deoplete#sources#go#align_class = 1
-
-
-    " Use partial fuzzy matches like YouCompleteMe
-    call deoplete#custom#source('_', 'matchers', ['matcher_fuzzy'])
-    call deoplete#custom#source('_', 'converters', ['converter_remove_paren'])
-    call deoplete#custom#source('_', 'disabled_syntaxes', ['Comment', 'String'])
-endif
-
-" Disable deoplete when in multi cursor mode
-function! Multiple_cursors_before()
-    let b:deoplete_disable_auto_complete = 1
-endfunction
-
-function! Multiple_cursors_after()
-    let b:deoplete_disable_auto_complete = 0
-endfunction
 
 "----------------------------------------------
 " Plugin: itchyny/lightline.vim
@@ -288,43 +276,15 @@ let g:lightline = {
 \ 'colorscheme': 'solarized',
 \ 'active': {
 \   'left': [['mode', 'paste'], ['filename', 'modified']],
-\   'right': [['lineinfo'], ['percent'], ['readonly', 'linter_warnings', 'linter_errors', 'linter_ok']]
-\ },
-\ 'component_expand': {
-\   'linter_warnings': 'LightlineLinterWarnings',
-\   'linter_errors': 'LightlineLinterErrors',
-\   'linter_ok': 'LightlineLinterOK'
+\   'right': [['lineinfo'], ['percent'], ['readonly']]
 \ },
 \ 'component_type': {
 \   'readonly': 'error',
-\   'linter_warnings': 'warning',
-\   'linter_errors': 'error'
 \ },
 \ 'component_function': {
 \   'filename': 'LightLineFilename'
 \ }
 \ }
-
-function! LightlineLinterWarnings() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ◆', all_non_errors)
-endfunction
-
-function! LightlineLinterErrors() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '' : printf('%d ✗', all_errors)
-endfunction
-
-function! LightlineLinterOK() abort
-  let l:counts = ale#statusline#Count(bufnr(''))
-  let l:all_errors = l:counts.error + l:counts.style_error
-  let l:all_non_errors = l:counts.total - l:all_errors
-  return l:counts.total == 0 ? '✓ ' : ''
-endfunction
 
 function! LightLineFilename()
   return expand('%')
@@ -482,12 +442,6 @@ au FileType vimwiki set softtabstop=2
 au FileType vimwiki set tabstop=2
 
 "----------------------------------------------
-" Plugin: zchee/deoplete-go
-"----------------------------------------------
-" Enable completing of go pointers
-let g:deoplete#sources#go#pointer = 1
-
-"----------------------------------------------
 " Language: fatih/vim-go
 "----------------------------------------------
 au FileType go set noexpandtab
@@ -509,9 +463,8 @@ let g:go_debug_windows = {
 let g:go_template_autocreate = 0
 let g:go_test_prepend_name = 1
 let g:go_list_type = "quickfix"
-let g:go_info_mode = "guru"
-
-let g:go_def_mode = "guru"
+let g:go_def_mode='gopls'
+let g:go_info_mode='gopls'
 let g:go_echo_command_info = 1
 let g:go_autodetect_gopath = 1
 let g:go_metalinter_autosave_enabled = ['vet', 'golint']
@@ -533,9 +486,10 @@ let g:go_gocode_propose_source = 1
 let g:go_modifytags_transform = 'camelcase'
 let g:go_fold_enable = []
 
+let g:go_snippet_engine = "neosnippet"
+
 nmap <C-g> :GoDecls<cr>
 imap <C-g> <esc>:<C-u>GoDecls<cr>
-
 
 " run :GoBuild or :GoTestCompile based on the go file
 function! s:build_go_files()
@@ -573,22 +527,6 @@ augroup go
   autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
   autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
 augroup END
-
-"----------------------------------------------
-" Plugin: w0rp/ale
-"----------------------------------------------
-let g:ale_sign_warning = '▲'
-let g:ale_sign_error = '✗'
-highlight link ALEWarningSign String
-highlight link ALEErrorSign Title
-let g:ale_lint_on_text_changed = "never"
-let g:ale_lint_on_enter = 0
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
-let g:ale_open_list = 0
-let g:ale_keep_list_window_open = 0
-
-autocmd FileType go let g:ale_linters = {'go': ['gometalinter']}
 
 "----------------------------------------------
 " Plugin: Raimondi/delimitMate
@@ -793,3 +731,52 @@ au FileType yaml set expandtab
 au FileType yaml set shiftwidth=2
 au FileType yaml set softtabstop=2
 au FileType yaml set tabstop=2
+
+let g:lsp_signs_enabled = 1
+let g:lsp_diagnostics_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
+
+if executable('gopls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'gopls',
+        \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
+        \ 'whitelist': ['go'],
+        \ })
+    autocmd BufWritePre *.go LspDocumentFormatSync
+endif
+
+call asyncomplete#register_source(asyncomplete#sources#neosnippet#get_source_options({
+    \ 'name': 'neosnippet',
+    \ 'whitelist': ['*'],
+    \ 'completor': function('asyncomplete#sources#neosnippet#completor'),
+    \ }))
+
+call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
+    \ 'name': 'buffer',
+    \ 'whitelist': ['*'],
+    \ 'blacklist': ['go'],
+    \ 'completor': function('asyncomplete#sources#buffer#completor'),
+    \ 'config': {
+    \    'max_buffer_size': 5000000,
+    \  },
+    \ }))
+
+"inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+"inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+"inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
+let g:asyncomplete_auto_popup = 0
+
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+  \ pumvisible() ? "\<C-n>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ asyncomplete#force_refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
