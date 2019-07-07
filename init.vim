@@ -13,13 +13,9 @@ Plug 'tpope/vim-rhubarb'           " Depenency for tpope/fugitive
 
 " General plugins
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'ctrlpvim/ctrlp.vim'          " CtrlP is installed to support tag finding in vim-go
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+Plug 'ervandew/supertab'
 Plug 'majutsushi/tagbar'
 Plug 'mhinz/vim-signify'
-Plug 'mileszs/ack.vim'
-Plug 'rbgrouleff/bclose.vim'
 Plug 'sbdchd/neoformat'
 Plug 'scrooloose/nerdcommenter'
 Plug 'scrooloose/nerdtree'
@@ -34,18 +30,12 @@ Plug 'blueyed/vim-diminactive'
 Plug 'Raimondi/delimitMate'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'Yggdroot/indentLine'
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
-Plug 'prabirshrestha/asyncomplete-buffer.vim'
-Plug 'Shougo/neosnippet.vim'
-Plug 'Shougo/neosnippet-snippets'
-Plug 'prabirshrestha/asyncomplete-neosnippet.vim'
+Plug 'w0rp/ale'
 
 " Language support
 Plug 'cespare/vim-toml'                        " toml syntax highlighting
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'stamblerre/gocode', { 'rtp': 'nvim', 'do': '~/.config/nvim/plugged/gocode/nvim/symlink.sh' }
 Plug 'kylef/apiblueprint.vim'                  " API Blueprint syntax highlighting
 Plug 'plasticboy/vim-markdown'                 " Markdown syntax highlighting
 Plug 'stephpy/vim-yaml'
@@ -62,10 +52,10 @@ call plug#end()
 "----------------------------------------------
 " General settings
 "----------------------------------------------
+set nocompatible
 set autoindent                    " take indent for new line from previous line
 set smartindent                   " enable smart indentation
 set autoread                      " reload file if the file changes on the disk
-set autowrite                     " write when switching buffers
 set autowriteall                  " write on :quit
 set clipboard+=unnamedplus
 set colorcolumn=81                " highlight the 80th column as an indicator
@@ -91,6 +81,8 @@ set backspace=indent,eol,start
 syntax sync minlines=256
 set synmaxcol=300
 set re=1
+set completeopt=menu,menuone
+set pumheight=10             " Completion window max size
 
 " Enable mouse if possible
 if has('mouse')
@@ -100,9 +92,6 @@ endif
 " Allow vim to set a custom font or color for a word
 syntax enable
 
-" Set the leader button
-let mapleader = ','
-
 " Autosave buffers before leaving them
 autocmd BufLeave * silent! :wa
 
@@ -110,9 +99,6 @@ autocmd BufLeave * silent! :wa
 autocmd BufWritePre * :%s/\s\+$//e
 
 au BufEnter * if &buftype == 'terminal' | :startinsert | endif
-
-" Center the screen quickly
-nnoremap <space> zz
 
 set wildmenu
 set wildignore+=.hg,.git,.svn                    " Version control
@@ -142,27 +128,23 @@ if has('clipboard')
     endif
 endif
 
-" change cursor between NORMAL and INSERT
-let &t_SI = "\<Esc>]50;CursorShape=1\x7"
-let &t_EI = "\<Esc>]50;CursorShape=0\x7"
-
 "----------------------------------------------
 " Mappings
 "----------------------------------------------
-nnoremap <CR> :w<CR>
-imap kj <Esc>
-nmap <space> <C-d>
-noremap j gj
-noremap k gk
-
 let mapleader = ","
 let maplocalleader = ","
 let g:mapleader = ","
 let g:maplocalleader = ","
 
-" Faster split
-noremap sv <C-W>v
-noremap sh <C-W>s
+nnoremap <leader>w :write<cr>
+nmap <c-s> :w<CR>
+vmap <c-s> <Esc><c-s>gv
+imap <c-s> <Esc><c-s>
+imap kj <Esc>
+nmap <space> <C-d>
+nmap <C-space> <C-u>
+noremap j gj
+noremap k gk
 
 noremap <Tab> ^==<Esc>
 
@@ -174,46 +156,19 @@ noremap <Tab> ^==<Esc>
 "nnoremap <silent> <leader>o :AddLines(v:count)<CR>
 "nnoremap <silent> <leader>O :<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>
 
+" Some useful quickfix shortcuts for quickfix
+"map <C-n> :cn<CR>
+"map <C-m> :cp<CR>
+"nnoremap <leader>a :cclose<CR>
+
+" Creating splits
+nnoremap vv :vsplit<cr>
+nnoremap vs :split<cr>
+
+" Closing splits
+nnoremap <leader>q :close<cr>
+
 nnoremap <leader>rc :source $MYVIMRC<cr>
-"----------------------------------------------
-" Colors
-"----------------------------------------------
-if &term =~ '256color'
-    " disable Background Color Erase (BCE) so that color schemes
-    " render properly when inside 256-color tmux and GNU screen.
-    " see also http://sunaku.github.io/vim-256color-bce.html
-    set t_ut=
-endif
-
-set t_Co=256
-set background=light
-colorscheme solarized
-
-" Override the search highlight color with a combination that is easier to
-" read. The default PaperColor is dark green backgroun with black foreground.
-"
-" Reference:
-" - http://vim.wikia.com/wiki/Xterm256_color_names_for_console_Vim
-highlight Search guibg=DeepPink4 guifg=White ctermbg=53 ctermfg=White
-
-" Toggle background with <leader>bg
-map <leader>bg :let &background = (&background == "dark"? "light" : "dark")<cr>
-
-highlight TermCursor ctermfg=red guifg=red
-highlight Search ctermfg=red guifg=red ctermbg=black guibg=black
-highlight SignColumn ctermbg=black
-
-"----------------------------------------------
-" Searching
-"----------------------------------------------
-set incsearch                     " move to match as you type the search query
-set hlsearch                      " disable search result highlighting
-set ignorecase
-set smartcase
-
-if has('nvim')
-    set inccommand=split          " enables interactive search and replace
-endif
 
 " Clear search highlights
 map <leader><space> :nohlsearch<cr>
@@ -223,9 +178,9 @@ map <leader><space> :nohlsearch<cr>
 nnoremap n nzzzv
 nnoremap N Nzzzv
 
-"----------------------------------------------
-" Navigation
-"----------------------------------------------
+" Toggle background with <leader>bg
+map <leader>bg :let &background = (&background == "dark"? "light" : "dark")<cr>
+
 " Disable arrow keys
 noremap <Up> <NOP>
 noremap <Down> <NOP>
@@ -251,18 +206,61 @@ cnoreabbrev Q q
 cnoreabbrev Qall qall
 
 "----------------------------------------------
+" Colors
+"----------------------------------------------
+if &term =~ '256color'
+     "disable Background Color Erase (BCE) so that color schemes
+     "render properly when inside 256-color tmux and GNU screen.
+     "see also http://sunaku.github.io/vim-256color-bce.html
+    set t_ut=
+endif
+
+set t_Co=256
+set background=light
+colorscheme solarized
+
+" Override the search highlight color with a combination that is easier to
+" read. The default PaperColor is dark green backgroun with black foreground.
+"
+" Reference:
+" - http://vim.wikia.com/wiki/Xterm256_color_names_for_console_Vim
+highlight Search guibg=DeepPink4 guifg=White ctermbg=53 ctermfg=White
+
+highlight TermCursor ctermfg=red guifg=red
+highlight Search ctermfg=red guifg=red ctermbg=black guibg=black
+highlight SignColumn ctermbg=black
+
+"----------------------------------------------
+" Searching
+"----------------------------------------------
+set incsearch                     " move to match as you type the search query
+set hlsearch                      " disable search result highlighting
+set ignorecase
+set smartcase
+
+if has('nvim')
+    set inccommand=split          " enables interactive search and replace
+endif
+
+"----------------------------------------------
 " Splits
 "----------------------------------------------
 " Create horizontal splits below the current window
 set splitbelow
 set splitright
 
-" Creating splits
-nnoremap vv :vsplit<cr>
-nnoremap vs :split<cr>
+" put quickfix window always to the bottom
+augroup quickfix
+    autocmd!
+    autocmd FileType qf wincmd J
+    autocmd FileType qf setlocal wrap
+augroup END
 
-" Closing splits
-nnoremap <leader>q :close<cr>
+"----------------------------------------------
+" Plugin: ervandew/supertab
+"----------------------------------------------
+let g:SuperTabDefaultCompletionType = "context"
+let g:SuperTabContextDefaultCompletionType = "<c-n>"
 
 "----------------------------------------------
 " Plugin: blueyed/vim-diminactive
@@ -290,14 +288,14 @@ function! LightLineFilename()
   return expand('%')
 endfunction
 
-autocmd User ALELint call s:MaybeUpdateLightline()
+"autocmd User ALELint call s:MaybeUpdateLightline()
 
-" Update and show lightline but only if it's visible (e.g., not in Goyo)
-function! s:MaybeUpdateLightline()
-  if exists('#lightline')
-    call lightline#update()
-  end
-endfunction
+"" Update and show lightline but only if it's visible (e.g., not in Goyo)
+"function! s:MaybeUpdateLightline()
+  "if exists('#lightline')
+    "call lightline#update()
+  "end
+"endfunction
 
 "----------------------------------------------
 " Plugin: christoomey/vim-tmux-navigator
@@ -320,20 +318,6 @@ nnoremap <silent> <c-j> :TmuxNavigateDown<cr>
 nnoremap <silent> <c-k> :TmuxNavigateUp<cr>
 nnoremap <silent> <c-l> :TmuxNavigateRight<cr>
 nnoremap <silent> <c-\> :TmuxNavigatePrevious<cr>
-
-"----------------------------------------------
-" Plugin: 'ctrlpvim/ctrlp.vim'
-"----------------------------------------------
-" Note: We are not using CtrlP much in this configuration. But vim-go depend on
-" it to run GoDecls(Dir).
-
-" Disable the CtrlP mapping, since we want to use FZF instead for <c-p>.
-let g:ctrlp_map = ''
-
-"----------------------------------------------
-" Plugin: 'junegunn/fzf.vim'
-"----------------------------------------------
-nnoremap <c-p> :FZF<cr>
 
 "----------------------------------------------
 " Plugin: 'majutsushi/tagbar'
@@ -379,18 +363,6 @@ let g:vim_markdown_folding_disabled = 1
 
 " Auto shrink the TOC, so that it won't take up 50% of the screen
 let g:vim_markdown_toc_autofit = 1
-
-"----------------------------------------------
-" Plugin: rbgrouleff/bclose.vim
-"----------------------------------------------
-" Close buffers
-nnoremap <leader>w :Bclose<cr>
-
-"----------------------------------------------
-" Plugin: mileszs/ack.vim
-"----------------------------------------------
-" Open ack
-nnoremap <leader>a :Ack!<space>
 
 "----------------------------------------------
 " Plugin: scrooloose/nerdtree
@@ -462,7 +434,7 @@ let g:go_debug_windows = {
 
 let g:go_template_autocreate = 0
 let g:go_test_prepend_name = 1
-let g:go_list_type = "quickfix"
+let g:go_list_type = 'quickfix'
 let g:go_def_mode='gopls'
 let g:go_info_mode='gopls'
 let g:go_echo_command_info = 1
@@ -486,8 +458,6 @@ let g:go_gocode_propose_source = 1
 let g:go_modifytags_transform = 'camelcase'
 let g:go_fold_enable = []
 
-let g:go_snippet_engine = "neosnippet"
-
 nmap <C-g> :GoDecls<cr>
 imap <C-g> <esc>:<C-u>GoDecls<cr>
 
@@ -507,7 +477,6 @@ augroup go
 
   autocmd FileType go nmap <silent> <Leader>v <Plug>(go-def-vertical)
   autocmd FileType go nmap <silent> <Leader>s <Plug>(go-def-split)
-  autocmd FileType go nmap <silent> <Leader>d <Plug>(go-def-tab)
 
   autocmd FileType go nmap <silent> <Leader>x <Plug>(go-doc-vertical)
 
@@ -520,6 +489,8 @@ augroup go
   autocmd FileType go nmap <silent> <leader>e  <Plug>(go-install)
 
   autocmd FileType go nmap <silent> <Leader>c <Plug>(go-coverage-toggle)
+
+  autocmd FileType go nmap <silent> <Leader>gi <Plug>(go-import)
 
   " I like these more!
   autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
@@ -732,51 +703,29 @@ au FileType yaml set shiftwidth=2
 au FileType yaml set softtabstop=2
 au FileType yaml set tabstop=2
 
-let g:lsp_signs_enabled = 1
-let g:lsp_diagnostics_enabled = 1
-let g:lsp_diagnostics_echo_cursor = 1
+" ALE
+" ----------------
+let g:ale_completion_enabled = 1
+let g:ale_sign_warning = '▲'
+let g:ale_sign_error = '✗'
+highlight link ALEWarningSign String
+highlight link ALEErrorSign Title
+let g:ale_lint_on_text_changed = "never"
+let g:ale_lint_on_insert_leave = 1
+let g:ale_lint_on_enter = 0
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+let g:ale_open_list = 0
+let g:ale_keep_list_window_open = 0
+let g:ale_linters = {'go': ['gopls']}
 
-if executable('gopls')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'gopls',
-        \ 'cmd': {server_info->['gopls', '-mode', 'stdio']},
-        \ 'whitelist': ['go'],
-        \ })
-    autocmd BufWritePre *.go LspDocumentFormatSync
-endif
+nmap <silent> <C-p> <Plug>(ale_previous_wrap)
+nmap <silent> <C-n> <Plug>(ale_next_wrap)
 
-call asyncomplete#register_source(asyncomplete#sources#neosnippet#get_source_options({
-    \ 'name': 'neosnippet',
-    \ 'whitelist': ['*'],
-    \ 'completor': function('asyncomplete#sources#neosnippet#completor'),
-    \ }))
-
-call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
-    \ 'name': 'buffer',
-    \ 'whitelist': ['*'],
-    \ 'blacklist': ['go'],
-    \ 'completor': function('asyncomplete#sources#buffer#completor'),
-    \ 'config': {
-    \    'max_buffer_size': 5000000,
-    \  },
-    \ }))
-
-"inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-"inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-"inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
-let g:asyncomplete_auto_popup = 0
-
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-
-inoremap <silent><expr> <TAB>
-  \ pumvisible() ? "\<C-n>" :
-  \ <SID>check_back_space() ? "\<TAB>" :
-  \ asyncomplete#force_refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
+augroup tmux
+  autocmd!
+  if exists('$TMUX')
+    autocmd BufReadPost,FileReadPost,BufNewFile,FocusGained * call system("tmux rename-window " . expand("%:t"))
+    autocmd VimLeave,FocusLost * call system("tmux set-window-option automatic-rename")
+  endif
+augroup END
