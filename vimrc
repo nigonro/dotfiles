@@ -30,11 +30,12 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'editorconfig/editorconfig-vim'
 
 " Language support
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
+"Plug 'prabirshrestha/async.vim'
+"Plug 'prabirshrestha/vim-lsp'
+"Plug 'prabirshrestha/asyncomplete.vim'
+"Plug 'prabirshrestha/asyncomplete-lsp.vim'
 "Plug 'arp242/gopher.vim'
+Plug 'dense-analysis/ale'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'evanleck/vim-svelte'
@@ -49,6 +50,7 @@ Plug 'aklt/plantuml-syntax'
 Plug 'leafgarland/typescript-vim'
 Plug 'kylef/apiblueprint.vim'
 Plug 'rust-lang/rust.vim'
+Plug 'hsanson/vim-openapi'
 
 " Colorschemes
 Plug 'altercation/vim-colors-solarized'
@@ -426,124 +428,6 @@ let g:delimitMate_smart_matchpairs = '^\%(\w\|\$\)'
 let g:delimitMate_excluded_ft = "html"
 
 imap <expr> <CR> pumvisible() ? "\<c-y>" : "<Plug>delimitMateCR"
-
-"----------------------------------------------
-" Plugin: prabirshrestha/vim-lsp
-"----------------------------------------------
-let g:lsp_signs_error = {'text': '✗'}
-let g:lsp_signs_warning = {'text': '‼'}
-let g:lsp_signs_enabled = 1         " enable signs
-let g:lsp_diagnostics_echo_cursor = 1 " enable echo under cursor when in normal mode
-
-set foldmethod=expr
-  \ foldexpr=lsp#ui#vim#folding#foldexpr()
-  \ foldtext=lsp#ui#vim#folding#foldtext()
-
-if executable('gopls')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'gopls',
-        \ 'cmd': {server_info->['gopls']},
-        \ 'whitelist': ['go'],
-        \ })
-    autocmd BufWritePre *.go LspDocumentFormatSync
-endif
-
-if executable('typescript-language-server')
-	au User lsp_setup call lsp#register_server({
-		\ 'name': 'typescript-language-server',
-		\ 'cmd': {server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-		\ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
-		\ 'whitelist': ['typescript', 'typescript.tsx'],
-		\ })
-endif
-
-if executable('typescript-language-server')
-    au User lsp_setup call lsp#register_server({
-      \ 'name': 'javascript support using typescript-language-server',
-      \ 'cmd': { server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-      \ 'root_uri': { server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_directory(lsp#utils#get_buffer_path(), '.git/..'))},
-      \ 'whitelist': ['javascript', 'javascript.jsx', 'javascriptreact']
-      \ })
-endif
-
-if executable('rls')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'rls',
-        \ 'cmd': {server_info->['rustup', 'run', 'stable', 'rls']},
-        \ 'workspace_config': {'rust': {'clippy_preference': 'on'}},
-        \ 'whitelist': ['rust'],
-        \ })
-endif
-
-if executable('clangd')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'clangd',
-        \ 'cmd': {server_info->['clangd', '-background-index']},
-        \ 'whitelist': ['c', 'cpp', 'objc', 'objcpp'],
-        \ })
-endif
-
-function! s:on_lsp_buffer_enabled() abort
-	setlocal omnifunc=lsp#complete
-	setlocal signcolumn=yes
-	nmap <buffer> <leader>i <plug>(lsp-hover)
-	nmap <buffer> <leader>s <plug>(lsp-signature-help)
-	nmap <buffer> gd <plug>(lsp-definition)
-	nmap <buffer> <leader>r <plug>(lsp-rename)
-	nnoremap <buffer> <silent> <c-n> :LspNextError<cr>
-	nnoremap <buffer> <silent> <c-p> :LspPreviousError<cr>
-endfunction
-
-augroup lsp_install
-	au!
-	autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
-augroup END
-
-"----------------------------------------------
-" Plugin: prabirshrestha/asyncomplete.vim
-"----------------------------------------------
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
-
-imap <c-space> <Plug>(asyncomplete_force_refresh)
-
-let g:asyncomplete_auto_popup = 0
-
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
-endfunction
-
-inoremap <silent><expr> <TAB>
-  \ pumvisible() ? "\<C-n>" :
-  \ <SID>check_back_space() ? "\<TAB>" :
-  \ asyncomplete#force_refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-
-"----------------------------------------------
-" Plugin: arp242/gopher.vim
-"----------------------------------------------
-"let g:gopher_debug = ['commands']
-"let g:gopher_highlight = ['string-spell', 'string-fmt']
-
-"augroup my-gopher
-    "au!
-
-    "" Make, lint, and test code.
-    "au FileType go nnoremap MM :silent! :wa<CR>:compiler go<CR>:silent make!<CR>:redraw!<CR>
-    "au FileType go nnoremap LL :wa<CR>:compiler golint<CR>:silent make!<CR>:redraw!<CR>
-    "au FileType go nnoremap TT :silent! :wa<CR>:compiler gotest<CR>:silent make!<CR>:redraw!<CR>
-
-    "" Format buffer on write.
-    "au BufWritePre *.go
-                "\  let s:save = winsaveview()
-                "\| exe 'keepjumps %!goimports 2>/dev/null || cat /dev/stdin'
-                "\| call winrestview(s:save)
-
-"augroup end
 
 "----------------------------------------------
 " Plugin: fatih/vim-go
