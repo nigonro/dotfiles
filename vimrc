@@ -1,9 +1,3 @@
-" Plugin management
-"
-" Download vim-plug from the URL below and follow the installation
-" instructions:
-" https://github.com/junegunn/vim-plug
-"----------------------------------------------
 call plug#begin('~/.vim/plugged')
 
 " Dependencies
@@ -21,23 +15,28 @@ Plug 'tpope/vim-surround'
 Plug 'ntpeters/vim-better-whitespace'
 Plug 'itchyny/lightline.vim'
 Plug 'blueyed/vim-diminactive'
-Plug 'Raimondi/delimitMate'
+Plug 'jiangmiao/auto-pairs'
 Plug 'jlanzarotta/bufexplorer'
 Plug 'Yggdroot/indentLine'
 Plug 'ConradIrwin/vim-bracketed-paste'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'editorconfig/editorconfig-vim'
 
 " Language support
-"Plug 'prabirshrestha/async.vim'
-"Plug 'prabirshrestha/vim-lsp'
-"Plug 'prabirshrestha/asyncomplete.vim'
-"Plug 'prabirshrestha/asyncomplete-lsp.vim'
-"Plug 'arp242/gopher.vim'
-Plug 'dense-analysis/ale'
+Plug 'prabirshrestha/callbag.vim'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mattn/vim-lsp-settings'
+Plug 'mattn/vim-lsp-icons'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'hrsh7th/vim-vsnip'
+Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'AndrewRadev/splitjoin.vim'
+Plug 'pangloss/vim-javascript'
 Plug 'evanleck/vim-svelte'
 Plug 'cespare/vim-toml'                        " toml syntax highlighting
 Plug 'plasticboy/vim-markdown'                 " Markdown syntax highlighting
@@ -51,6 +50,7 @@ Plug 'leafgarland/typescript-vim'
 Plug 'kylef/apiblueprint.vim'
 Plug 'rust-lang/rust.vim'
 Plug 'hsanson/vim-openapi'
+Plug 'freitass/todo.txt-vim'
 
 " Colorschemes
 Plug 'altercation/vim-colors-solarized'
@@ -69,7 +69,7 @@ set autowriteall                  " write on :quit
 set clipboard=unnamedplus
 set colorcolumn=81                " highlight the 80th column as an indicator
 set cursorline                    " highlight the current line for the cursor
-set encoding=utf-8
+set encoding=UTF-8
 set nospell                       " disable spelling
 set noswapfile                    " disable swapfile usage
 set nowrap
@@ -93,12 +93,13 @@ set completeopt-=preview          " remove the horrendous preview window
 set pumheight=10             " Completion window max size
 
 "Enable mouse if possible
-"if has('mouse')
-	"set mouse=a
-"endif
+if has('mouse')
+	set mouse=a
+endif
 
 " Allow vim to set a custom font or color for a word
 syntax enable
+set redrawtime=10000
 
 " Remove trailing white spaces on save
 autocmd BufWritePre * :%s/\s\+$//e
@@ -143,8 +144,6 @@ nmap <c-s> :w<CR>
 vmap <c-s> <Esc><c-s>gv
 imap <c-s> <Esc><c-s>
 imap kj <Esc>
-nmap <space> <C-d>
-nmap <C-space> <C-u>
 noremap j gj
 noremap k gk
 
@@ -174,10 +173,13 @@ nnoremap N Nzzzv
 map <leader>bg :let &background = (&background == "dark"? "light" : "dark")<cr>
 
 " Disable arrow keys
-noremap <Up> <NOP>
-noremap <Down> <NOP>
-noremap <Left> <NOP>
-noremap <Right> <NOP>
+" No arrow keys --- force yourself to use the home row
+nnoremap <up> <nop>
+nnoremap <down> <nop>
+inoremap <up> <nop>
+inoremap <down> <nop>
+inoremap <left> <nop>
+inoremap <right> <nop>
 
 augroup qf
     autocmd!
@@ -232,6 +234,7 @@ endif
 set t_Co=256
 "set background=light
 colorscheme solarized
+let g:lightline = { 'colorscheme': 'solarized' }
 
 "" Override the search highlight color with a combination that is easier to
 "" read. The default PaperColor is dark green backgroun with black foreground.
@@ -270,6 +273,13 @@ augroup quickfix
 augroup END
 
 autocmd BufWritePost *.uml :make
+
+"----------------------------------------------
+Plug 'junegunn/fzf.vim'
+"----------------------------------------------
+nnoremap <leader>ff :Files<CR>
+let g:fzf_preview_window = ''
+let g:fzf_layout         = { 'down': '~20%' }
 
 "----------------------------------------------
 " Plugin: Yggdroot/indentLine
@@ -334,7 +344,7 @@ inoremap <silent> <c-\> <esc>:TmuxNavigatePrevious<cr>
 " Plugin: 'majutsushi/tagbar'
 "----------------------------------------------
 " Add shortcut for toggling the tag bar
-nnoremap <F3> :TagbarToggle<cr>
+nnoremap <leader>tb :TagbarToggle<cr>
 
 " Language: Go
 " Tagbar configuration for Golang
@@ -366,6 +376,20 @@ let g:tagbar_type_go = {
     \ 'ctagsargs' : '-sort -silent'
 \ }
 
+let g:tagbar_type_typescript = {
+  \ 'ctagstype': 'typescript',
+  \ 'kinds': [
+    \ 'c:classes',
+    \ 'n:modules',
+    \ 'f:functions',
+    \ 'v:variables',
+    \ 'v:varlambdas',
+    \ 'm:members',
+    \ 'i:interfaces',
+    \ 'e:enums',
+  \ ]
+\ }
+
 "----------------------------------------------
 " Plugin: plasticboy/vim-markdown
 "----------------------------------------------
@@ -381,7 +405,7 @@ let g:vim_markdown_conceal = 0
 "----------------------------------------------
 nnoremap <leader>n :NERDTreeToggle<cr>
 nnoremap <F2> :NERDTreeToggle<cr>
-noremap <leader>f :NERDTreeFind<cr>
+"noremap <leader>f :NERDTreeFind<cr>
 
 let NERDTreeQuitOnOpen=1
 let NERDTreeShowHidden=1
@@ -441,7 +465,56 @@ nnoremap <leader>a :cclose<CR>
 autocmd FileType go nmap <leader>t  <Plug>(go-test)
 autocmd FileType go nmap <leader>b  <Plug>(go-build)
 autocmd FileType go nmap <leader>r  <Plug>(go-run)
+autocmd FileType go nmap <leader>v  <Plug>(go-vet)
 
+"----------------------------------------------
+" Plugin: hrsh7th/vim-vsnip
+"----------------------------------------------
+imap <expr> <Tab> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : pumvisible() ? "\<C-n>" : "\<Tab>"
+smap <expr> <Tab> vsnip#available(1) ? '<Plug>(vsnip-expand-or-jump)' : pumvisible() ? "\<C-n>" : "\<Tab>"
+imap <expr> <S-Tab> vsnip#available(1) ? '<Plug>(vsnip-jump-prev)' : pumvisible() ? "\<C-p>" : "\<S-Tab>"
+smap <expr> <S-Tab> vsnip#available(1) ? '<Plug>(vsnip-jump-prev)' : pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+"----------------------------------------------
+" Plugin: prabirshrestha/asyncomplete.vim
+"----------------------------------------------
+inoremap <expr> <CR> pumvisible() ? asyncomplete#close_popup() : "\<CR>"
+inoremap <expr> <C-y> pumvisible() ? asyncomplete#close_popup() : "\<C-y>"
+inoremap <expr> <C-e> pumvisible() ? asyncomplete#cancel_popup() : "\<C-e>"
+
+autocmd! CompleteDone * if !pumvisible() | pclose | endif
+
+"----------------------------------------------
+" Plugin: prabirshrestha/vim-lsp
+"----------------------------------------------
+function! s:on_lsp_buffer_enabled() abort
+  setlocal omnifunc=lsp#complete
+  setlocal signcolumn=yes
+
+  if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+  nmap <buffer> gd <plug>(lsp-definition)
+  nmap <buffer> gr <plug>(lsp-references)
+  nmap <buffer> gi <plug>(lsp-implementation)
+  nmap <buffer> gt <plug>(lsp-type-definition)
+  nmap <buffer> <leader>rn <plug>(lsp-rename)
+  nmap <buffer> [g <Plug>(lsp-previous-diagnostic)
+  nmap <buffer> ]g <Plug>(lsp-next-diagnostic)
+  nmap <buffer> K <plug>(lsp-hover)
+  nmap <buffer> D <plug>(lsp-document-diagnostics)
+
+  nnoremap <buffer> gs :<C-u>LspDocumentSymbol<CR>
+  nnoremap <buffer> gS :<C-u>LspWorkspaceSymbol<CR>
+  nnoremap <buffer> gQ :<C-u>LspDocumentFormat<CR>
+  vnoremap <buffer> gQ :LspDocumentRangeFormat<CR>
+  nnoremap <buffer> <leader>ca :LspCodeAction<CR>
+  xnoremap <buffer> <leader>ca :LspCodeAction<CR>
+  autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+endfunction
+
+augroup configure_lsp
+  au!
+  autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
 
 "----------------------------------------------
 " Language: Go
@@ -515,6 +588,7 @@ au FileType javascript set tabstop=2
 "----------------------------------------------
 " Language: JSON
 "----------------------------------------------
+au Filetype json :IndentLinesDisable
 au FileType json set shiftwidth=2
 au FileType json set softtabstop=2
 au FileType json set tabstop=2
@@ -588,17 +662,17 @@ au FileType toml set tabstop=2
 "----------------------------------------------
 " Language: TypeScript
 "----------------------------------------------
-au FileType typescript set shiftwidth=4
-au FileType typescript set softtabstop=4
-au FileType typescript set tabstop=4
+au FileType typescript set shiftwidth=2
+au FileType typescript set softtabstop=2
+au FileType typescript set tabstop=2
 
 "----------------------------------------------
 " Language: Svelte
 "----------------------------------------------
 au FileType svelte set noexpandtab
-au FileType svelte set shiftwidth=4
-au FileType svelte set softtabstop=4
-au FileType svelte set tabstop=4
+au FileType svelte set shiftwidth=2
+au FileType svelte set softtabstop=2
+au FileType svelte set tabstop=2
 
 "----------------------------------------------
 " Language: Vader
@@ -620,19 +694,3 @@ au FileType vim set tabstop=4
 au FileType yaml set shiftwidth=2
 au FileType yaml set softtabstop=2
 au FileType yaml set tabstop=2
-
-
-function! ClipboardOrXclip(command, register)
-    if a:register !~ '[+*]' || has('xterm_clipboard') || has('gui_running')
-        " Just return the original command if the clipboard is accessible
-        " or it's not a register that should be handled by xsel
-        return a:command
-    endif
-    if a:register == '+'
-        return "<Esc>:r !xsel -bo<CR>"
-    else
-        return "<Esc>:r !xsel -po<CR>"
-    endif
-endfunction
-
-nnoremap <silent> <expr> p ClipboardOrXclip('p', v:register)
