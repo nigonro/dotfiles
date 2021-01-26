@@ -23,6 +23,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'editorconfig/editorconfig-vim'
+Plug 'mtth/scratch.vim'
 
 " Language support
 Plug 'prabirshrestha/callbag.vim'
@@ -32,8 +33,8 @@ Plug 'mattn/vim-lsp-settings'
 Plug 'mattn/vim-lsp-icons'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
-Plug 'hrsh7th/vim-vsnip'
-Plug 'hrsh7th/vim-vsnip-integ'
+"Plug 'hrsh7th/vim-vsnip'
+"Plug 'hrsh7th/vim-vsnip-integ'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'AndrewRadev/splitjoin.vim'
 Plug 'pangloss/vim-javascript'
