@@ -78,15 +78,15 @@ keymap("v", ">", ">gv", opts)
 -- Plugins --
 
 -- Navigator
-keymap('n', "<C-h>", ":NavigatorLeft<CR>", opts)
-keymap('n', "<C-l>", ":NavigatorRight<CR>", opts)
-keymap('n', "<C-k>", ":NavigatorUp<CR>", opts)
-keymap('n', "<C-j>", ":NavigatorDown<CR>", opts)
+keymap("n", "<C-h>", ":NavigatorLeft<CR>", opts)
+keymap("n", "<C-l>", ":NavigatorRight<CR>", opts)
+keymap("n", "<C-k>", ":NavigatorUp<CR>", opts)
+keymap("n", "<C-j>", ":NavigatorDown<CR>", opts)
 
-keymap('i', "<C-h>", "<ESC>:NavigatorLeft<CR>", opts)
-keymap('i', "<C-l>", "<ESC>:NavigatorRight<CR>", opts)
-keymap('i', "<C-k>", "<ESC>:NavigatorUp<CR>", opts)
-keymap('i', "<C-j>", "<ESC>:NavigatorDown<CR>", opts)
+keymap("i", "<C-h>", "<ESC>:NavigatorLeft<CR>", opts)
+keymap("i", "<C-l>", "<ESC>:NavigatorRight<CR>", opts)
+keymap("i", "<C-k>", "<ESC>:NavigatorUp<CR>", opts)
+keymap("i", "<C-j>", "<ESC>:NavigatorDown<CR>", opts)
 
 -- NvimTree
 keymap("n", "<leader>e", ":NvimTreeToggle<CR>", opts)

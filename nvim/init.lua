@@ -1,15 +1,17 @@
-require "config.options"
-require "config.keymaps"
-require "config.plugins"
-require "config.autocommands"
-require "config.colorscheme"
-require "config.cmp"
-require "config.telescope"
-require "config.autopairs"
-require "config.comment"
-require "config.gitsigns"
-require "config.nvim-tree"
-require "config.lualine"
-require "config.impatient"
-require "config.indentline"
-require "config.lsp"
+require("config.options")
+require("config.keymaps")
+require("config.plugins")
+require("config.autocommands")
+require("config.colorscheme")
+require("config.cmp")
+require("config.telescope")
+require("config.autopairs")
+require("config.comment")
+require("config.gitsigns")
+require("config.nvim-tree")
+require("config.lualine")
+require("config.impatient")
+require("config.indentline")
+require("config.lsp")
+require("config.go")
+require("config.align")

@@ -19,7 +19,7 @@ local diagnostics = {
 local diff = {
 	"diff",
 	colored = false,
-	symbols = { added = '+', modified = '~', removed = '-' },
+	symbols = { added = "+", modified = "~", removed = "-" },
 	cond = hide_in_width,
 }
 
@@ -37,10 +37,10 @@ local spaces = function()
 	return "spaces: " .. vim.api.nvim_buf_get_option(0, "shiftwidth")
 end
 
-lualine.setup {
+lualine.setup({
 	options = {
 		globalstatus = true,
-		icons_enabled = true,
+		icons_enabled = false,
 		theme = "solarized_light",
 		component_separators = { left = "", right = "" },
 		section_separators = { left = "", right = "" },
@@ -55,7 +55,6 @@ lualine.setup {
 				"filename",
 				file_status = true, -- Displays file status (readonly status, modified status)
 				newfile_status = false, -- Display new file status (new file means no write after created)
-
 				path = 3,
 				-- 0: Just the filename
 				-- 1: Relative path
@@ -69,12 +68,12 @@ lualine.setup {
 					readonly = "[-]", -- Text to show when the file is non-modifiable or readonly.
 					unnamed = "[No Name]", -- Text to show for unnamed buffers.
 					newfile = "[New]", -- Text to show for new created file before first writting
-				}
+				},
 			},
 		},
 		lualine_x = { "encoding", "fileformat", "filetype" },
 		lualine_y = { "progress" },
-		lualine_z = { "location" }
+		lualine_z = { "location" },
 	},
 	inactive_sections = {
 		lualine_a = {},
@@ -82,6 +81,6 @@ lualine.setup {
 		lualine_c = { "filename" },
 		lualine_x = { "location" },
 		lualine_y = {},
-		lualine_z = {}
+		lualine_z = {},
 	},
-}
+})

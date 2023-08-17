@@ -140,6 +140,16 @@ _G.packer_plugins = {
     path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
     url = "https://github.com/lewis6991/gitsigns.nvim"
   },
+  ["go.nvim"] = {
+    loaded = true,
+    path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/go.nvim",
+    url = "https://github.com/ray-x/go.nvim"
+  },
+  ["guihua.lua"] = {
+    loaded = true,
+    path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/guihua.lua",
+    url = "https://github.com/ray-x/guihua.lua"
+  },
   ["impatient.nvim"] = {
     loaded = true,
     path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/impatient.nvim",
@@ -154,6 +164,16 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/lualine.nvim",
     url = "https://github.com/nvim-lualine/lualine.nvim"
+  },
+  ["mason-lspconfig.nvim"] = {
+    loaded = true,
+    path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/mason-lspconfig.nvim",
+    url = "https://github.com/williamboman/mason-lspconfig.nvim"
+  },
+  ["mason.nvim"] = {
+    loaded = true,
+    path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/mason.nvim",
+    url = "https://github.com/williamboman/mason.nvim"
   },
   ["null-ls.nvim"] = {
     loaded = true,
@@ -170,11 +190,6 @@ _G.packer_plugins = {
     path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/nvim-cmp",
     url = "https://github.com/hrsh7th/nvim-cmp"
   },
-  ["nvim-lsp-installer"] = {
-    loaded = true,
-    path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/nvim-lsp-installer",
-    url = "https://github.com/williamboman/nvim-lsp-installer"
-  },
   ["nvim-lspconfig"] = {
     loaded = true,
     path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/nvim-lspconfig",
@@ -184,6 +199,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/nvim-tree.lua",
     url = "https://github.com/kyazdani42/nvim-tree.lua"
+  },
+  ["nvim-treesitter"] = {
+    loaded = true,
+    path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/nvim-treesitter",
+    url = "https://github.com/nvim-treesitter/nvim-treesitter"
   },
   ["nvim-web-devicons"] = {
     loaded = true,
@@ -199,6 +219,16 @@ _G.packer_plugins = {
     loaded = true,
     path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/plenary.nvim",
     url = "https://github.com/nvim-lua/plenary.nvim"
+  },
+  ["scratch.vim"] = {
+    loaded = true,
+    path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/scratch.vim",
+    url = "https://github.com/mtth/scratch.vim"
+  },
+  tabular = {
+    loaded = true,
+    path = "/Users/UJKQ4LS/.local/share/nvim/site/pack/packer/start/tabular",
+    url = "https://github.com/godlygeek/tabular"
   },
   ["telescope.nvim"] = {
     loaded = true,

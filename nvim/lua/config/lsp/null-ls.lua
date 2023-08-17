@@ -6,21 +6,21 @@ end
 local b = null_ls.builtins
 
 local sources = {
-	b.formatting.prettier.with {
+	b.formatting.prettierd.with({
 		extra_filetypes = { "toml" },
 		extra_args = { "--no-semi", "--single-quote", "--jsx-single-quote" },
-	},
-	b.formatting.prettier.with {
+	}),
+	b.formatting.prettierd.with({
 		extra_filetypes = { "svelte" },
-	},
+	}),
 	b.formatting.stylua,
 	b.formatting.google_java_format,
 	b.formatting.gofmt,
 	b.formatting.goimports,
 	b.diagnostics.staticcheck,
-	b.diagnostics.eslint.with {
+	b.diagnostics.eslint_d.with({
 		extra_filetypes = { "svelte" },
-	},
+	}),
 	b.diagnostics.tsc,
 }
 
@@ -36,7 +36,7 @@ local lsp_formatting = function(bufnr)
 	})
 end
 
-null_ls.setup {
+null_ls.setup({
 	debug = true,
 	sources = sources,
 	on_attach = function(client, bufnr)
@@ -51,4 +51,4 @@ null_ls.setup {
 			})
 		end
 	end,
-}
+})
