@@ -42,6 +42,7 @@ packer.init({
 -- Install your plugins here
 return packer.startup(function(use)
 	use("wbthomason/packer.nvim")
+	use("maxmx03/solarized.nvim")
 	use("nvim-lua/plenary.nvim")
 	use("windwp/nvim-autopairs")
 	use({
@@ -65,6 +66,34 @@ return packer.startup(function(use)
 	use("jlanzarotta/bufexplorer")
 	use("mtth/scratch.vim")
 	use("godlygeek/tabular")
+	use({
+		"kevinhwang91/nvim-ufo",
+		requires = {
+			"kevinhwang91/promise-async",
+			{
+				"luukvbaal/statuscol.nvim",
+				config = function()
+					local builtin = require("statuscol.builtin")
+					require("statuscol").setup({
+						relculright = true,
+						segments = {
+							{ text = { builtin.foldfunc }, click = "v:lua.ScFa" },
+							{ text = { "%s" }, click = "v:lua.ScSa" },
+							{ text = { builtin.lnumfunc, " " }, click = "v:lua.ScLa" },
+						},
+					})
+				end,
+			},
+		},
+	})
+	use({
+		"akinsho/bufferline.nvim",
+		tag = "*",
+		requires = "nvim-tree/nvim-web-devicons",
+		config = function()
+			require("bufferline").setup({})
+		end,
+	})
 
 	-- cmp plugins
 	use("hrsh7th/nvim-cmp")
@@ -74,8 +103,6 @@ return packer.startup(function(use)
 	use("hrsh7th/cmp-nvim-lua")
 
 	-- snippets
-	-- use("dcampos/nvim-snippy")
-	-- use("dcampos/cmp-snippy")
 	use("L3MON4D3/LuaSnip")
 	use("saadparwaiz1/cmp_luasnip")
 	use("rafamadriz/friendly-snippets")
