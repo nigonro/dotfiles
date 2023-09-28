@@ -132,11 +132,6 @@ hide_when_typing = false
 save_to_clipboard = false
 semantic_escape_chars = ",│`|:\"' ()[]{}<>\t"
 
-[shell]
-args = ["-u"]
-program = "/usr/local/bin/tmux"
-
 [window]
 decorations = "none"
 startup_mode = "Maximized"
-
