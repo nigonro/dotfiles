@@ -18,3 +18,19 @@
   ls = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue \\ [%cn]" --decorate
   ll = diff-tree --no-commit-id --name-only -r
   lt = ls-tree -r master --name-only
+[credential]
+	helper = store
+[difftool]
+    prompt = true
+[diff]
+    tool = nvimdiff
+[difftool "nvimdiff"]
+	cmd = "nvim -d \"$LOCAL\" \"$REMOTE\""
+[mergetool]
+    prompt = true
+[merge]
+    tool = nvimdiff
+[mergetool "nvimdiff"]
+    cmd = "nvim -d \"$LOCAL\" \"$REMOTE\" \"$MERGED\" -c 'wincmd w' -c 'wincmd J'"
+[mergetool "fugitive"]
+	cmd = nvim -f -c \"Gvdiffsplit!\" \"$MERGED\"
